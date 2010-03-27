@@ -282,6 +282,12 @@ def main(argv):
         print >>sys.stderr,"ERROR: %s" % e
         sys.exit(-1)
 
+    if ACTION == CREATE:
+        dbdir = os.path.dirname(DB)
+        if not os.path.exists(dbdir):
+            os.makedirs(dbdir)
+            print "Created directory [%s]" % dbdir
+
     open_database(DB, create=(ACTION==CREATE))
     if ACTION == LIST:
         for o in get_all_tables():
