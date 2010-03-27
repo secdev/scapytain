@@ -1022,6 +1022,7 @@ def main(*args):
         cherrypy.config.update({"environment":"production"})
 
     cherrypy.engine.start()
+    cherrypy.engine.block()
 
 
 if __name__ == "__main__":
