@@ -1,0 +1,19 @@
+syntax: glob
+
+build/*
+dist/*
+core
+core.*
+*~
+#*#
+*.pyc
+.*.swp
+*.aux
+*.mtc*
+*.toc
+*.bmt
+*.dvi
+_TZ_*.*
+*.rej
+*.orig
+*.autosave

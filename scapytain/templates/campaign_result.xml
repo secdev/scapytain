@@ -1,0 +1,57 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      xmlns:py="http://genshi.edgewall.org/">
+  
+<xi:include href="layout.xml" />
+
+  <head>
+    <title>Test Result for ${res.campaign_run.reference}/${res.test.test_spec.reference}</title>
+  </head>
+
+  <body py:with="run=res.campaign_run; camp=run.campaign; tcode=res.test; tspec=tcode.test_spec">
+    
+    <menu campaign="${camp.id}" tspec="${tspec.id}" />
+
+    <bigtitle title="Test result" />
+
+    <div class="navbar">
+      <a href="/">Home</a> &gt; 
+      <a href="/campaign">Campaigns</a> &gt;
+      <a href="/campaign/${camp.id}">${camp.reference}</a> &gt;
+      <a href="/campaign_run/${run.id}">${run.reference}</a> &gt;
+      <a href="/result/${res.id}">result of ${tspec.reference}</a> &gt;
+    </div>
+    
+    <div class="content">	
+	
+      <h1>${run.reference}/${tspec.reference}: ${tspec.name}</h1>
+
+      <h2>Test description</h2>
+      <p>
+	${tspec.description}
+      </p>
+      <h2>Expected result</h2>
+      <p>
+	${tspec.expected_result}
+      </p>
+
+      <h2>Test implementation, version ${tcode.version}/${len(list(tspec.tests))}</h2>
+
+	${Markup(hl_test)}
+	
+
+	<py:if test="res.completed">
+
+	  <h1>Test ${res.status.status} on ${res.date}</h1>
+	  
+	  <pre class="code">${Markup(res.output)}</pre>
+	</py:if>
+	<py:if test="not res.completed">
+	  <h1>Test ${res.status.status}</h1>
+	</py:if>
+	  
+
+    </div>
+  </body>
+</html>
+

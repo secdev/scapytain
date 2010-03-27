@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<!DOCTYPE document SYSTEM "rml.dtd">
+
+
+
+<document  xmlns:py="http://genshi.edgewall.org/" py:strip="">
+
+  <py:match path="template" once="true">
+    <template>
+      <pagesize>(21cm,20.7cm)</pagesize>
+      <title>qkd jlqs lqjd </title>
+      <author>DQLJHDMQKLSJD</author>
+<!--	      leftmargin="0.5cm" rightmargin="5cm" topmargin="0.5cm" bottommargin="0.5cm" 
+	      title="Mon titre" author="C moi qui l'ai fait"> -->
+
+      <pageTemplate id="main">
+	<frame id="first" x1="1cm" y1="1cm" width="20cm" height="28.7cm"/>
+      </pageTemplate>
+    </template>
+  </py:match>
+
+  <py:match path="stylesheet" once="true">
+    <stylesheet>
+      <paraStyle name="maib"
+		 fontName="Helvetica"
+		 fontSize="36"
+		 leading="36"
+		 />      
+      
+      <paraStyle name="tablepara"
+		 fontName="Helvetica"
+		 fontSize="8"
+		 />      
+      
+      <blockTableStyle id="reqtable" >
+	<blockFont name="Helvetica" size="8" />
+	<blockTextColor colorName="black" />
+	<blockBackground colorName="cornsilk" start="0,1" stop="-1,-1"/>
+	<blockBackground colorName="lightcyan" start="0,0" stop="-1,0"/>
+	<lineStyle kind="OUTLINE" colorName="black" thickness="0.25"/>
+	<lineStyle kind="GRID" colorName="blue" thickness="0.25"/> 
+	<blockValign value="TOP" />
+	<blockLeftPadding length="1" />
+	<blockRightPadding length="1" />
+	<blockTopPadding length="1" />
+	<blockBottomPadding length="1" />
+      </blockTableStyle>
+
+    </stylesheet>
+  </py:match>
+</document>
+
+  

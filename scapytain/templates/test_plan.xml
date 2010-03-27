@@ -1,0 +1,84 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      xmlns:py="http://genshi.edgewall.org/">
+  
+<xi:include href="layout.xml" />
+
+  <head>
+    <title>Test Plan ${test_plan.reference}</title>
+  </head>
+
+
+  <body py:with="baseurl='/test_plan/%i' % test_plan.id">
+    <?python
+      if extended_view:
+         baseurl += "?extended_view=1"
+    ?>
+
+    <menu test_plan="${test_plan.id}" />
+    <bigtitle title="Test plan description" />
+    <div class="navbar">
+      <a href="/project">Home</a> &gt; 
+      <a href="/test_plan/">Test Plans</a> &gt;
+      <a href="/test_plan/${test_plan.id}">${test_plan.reference}</a> &gt;
+    </div>
+
+    <div class="content">
+      <h1>${test_plan.reference}: ${test_plan.name}</h1>
+
+      <pre class="text">${test_plan.description.strip()}</pre>
+
+      <py:if test="test_plan.sections and not sortkey">
+	<h2>Table of sections</h2>
+	<ol>
+	  <li py:for="s in test_plan.sections"><a href="#sec${s.id}">${s.name}</a></li>
+	</ol>
+      </py:if>
+
+      <h2>Objectives</h2>
+
+	  <tr py:def="headers">
+	    <th sortkey="reference">Reference</th>
+	    <th sortkey="name">Name</th>
+	    <th py:if="extended_view" sortkey="description">Description</th>
+	    <th sortkey="priority">Priority</th>
+	    <th sortkey="nbtests">#Tests</th>
+	    <th sortkey="applicable">Applicable</th>
+	  </tr>
+	  <tr py:def="objrow(obj)" class="${['not_applicable','applicable'][obj.applicable]}">
+	    <td><a href="/objective/${obj.id}">${obj.reference}</a></td>
+	    <td>${obj.name}</td>
+	    <td py:if="extended_view"><pre class="text">${obj.description.strip()}</pre></td>
+	    <td class="nb">${obj.priority}</td>
+	    <td class="nb">${len(obj.tests)}</td>
+	    <td>${["no","yes"][obj.applicable]}</td>
+	  </tr>
+	  
+
+	  <table class="list">
+	    ${headers()}
+	    <py:for each="obj in sorted(test_plan.objectives, key=sortkey_getter, reverse=bool(rev))">
+	      <py:if test="sortkey or (obj.section is None)">
+		${objrow(obj)}
+	      </py:if>
+	    </py:for>
+	  </table>
+
+	  
+	  <py:if test="not sortkey">
+	    <py:for each="sec in test_plan.sections">
+	      
+	      <h3><a name="sec${sec.id}">${sec.name}</a></h3>
+	      
+	      <table class="list">
+		${headers()}
+		<py:for each="obj in sec.objectives">
+		  ${objrow(obj)}
+		</py:for>
+	      </table>
+	    </py:for>
+	  </py:if>
+    </div>
+  </body>
+</html>
+

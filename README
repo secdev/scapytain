@@ -1,0 +1,47 @@
+Warning: This is beta software.
+You've been warned.
+
+Installation
+------------
+
+0. Dependencies
+
+This package depends on
+* python-cherrypy3
+* python-genshi
+* python-sqlobject
+* python-formencode
+* python-pyopenssl
+* python-pysqlite
+* python-reportlab
+* python-trml2pdf
+* scapy
+* highlight
+* graphviz
+
+1. Install everything
+
+python ./setup.py install
+
+2. Configure: 
+
+Edit /etc/scapytainrc.
+
+Edit the database URI
+
+If you need authentication, add users in the file and make it readable by the application only.
+If you do not need authentication, set "auth" parameter to false. WARNING: any user of this application can become
+root on the box.
+
+If yon need SSL: create a certificate and a key.
+For intance:  openssl req -new -x509 -nodes -keyout scapytain.key -out scapytain.crt
+Then fill the ssl_certificate and ssl_key with paths to these files.
+
+
+3. Create tables
+
+scapytain_dbutil -c
+
+4. Launch Scapytain
+
+scapytain &

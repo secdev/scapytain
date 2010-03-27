@@ -1,0 +1,20 @@
+
+[server]
+# port = 8080
+# ssl_certificate = 
+# ssl_key = 
+# production = True
+# auth = True
+# database = sqlite:///var/lib/scapytain/scapytain.db
+
+[paths]
+# static =
+# templates = 
+# scapyproxy = # ssh other_box sudo scapytain_scapyproxy
+# scapy =
+# modules =
+# highlight = 
+
+[users]
+# login:passwd
+# passwd is in cleartext

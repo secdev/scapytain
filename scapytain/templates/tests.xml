@@ -1,0 +1,65 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      xmlns:py="http://genshi.edgewall.org/">
+  
+<xi:include href="layout.xml" />
+
+  <head>
+    <title>All tests</title>
+  </head>
+
+
+  <body py:with="baseurl='/test'">
+    
+    <menu />
+    <bigtitle title="All Tests"/>
+    <div class="navbar">
+      <a href="/">Home</a> &gt;
+      <a href="/test">Tests</a> &gt;
+    </div>
+    
+    <div class="content">
+    
+      <h1>Available Tests</h1>
+	
+      <tr py:def="headers">
+        <th sortkey="reference">Reference</th>
+        <th sortkey="name">Name</th>
+        <th sortkey="description">Description</th>
+        <th sortkey="version">Version</th>
+      </tr>
+
+      <tr py:def="testrow(ts)">
+         <td><a href="/test/${ts.id}">${ts.reference}</a></td>
+         <td>${ts.name}</td>
+         <td>${ts.description}</td>
+         <td>${ts.tests[-1].version}</td>
+	</tr>
+	
+      <table class="list">
+	${headers()}
+	<py:for each="ts in sorted(tspecs, key=sortkey_getter, reverse=bool(rev))">
+	  <py:if test="sortkey or not ts.test_group">
+	    ${testrow(ts)}
+	  </py:if>
+	</py:for>
+      </table>
+	
+
+     <py:if test="not sortkey">
+      <py:for each="grp in groups">
+	
+	<h2>${grp.name}</h2>
+	
+	<table class="list">
+	  ${headers()}
+	  <py:for each="ts in grp.tests">
+	    ${testrow(ts)}
+	  </py:for>
+	</table>
+      </py:for>
+     </py:if>
+    </div>
+  </body>
+</html>
+

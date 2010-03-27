@@ -1,0 +1,45 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      xmlns:py="http://genshi.edgewall.org/">
+  
+<xi:include href="layout.xml" />
+
+  <head>
+    <title>Test mean ${tm.reference}</title>
+  </head>
+
+
+  <body>
+    
+
+    <menu test_mean="${tm.id}" />
+    <bigtitle title="Test Mean Description" />
+    <div class="navbar">
+      <a href="/">Home</a> &gt; 
+      <a href="/test_mean/">Test Means</a> &gt;
+      <a href="/test_mean/${tm.id}">${tm.reference}</a> &gt;
+    </div>
+
+    <div class="content">
+      <h1>${tm.reference}: ${tm.name}</h1>
+	
+      <h2>Description</h2>
+
+      <p>
+      ${tm.description}
+      </p>
+
+      <img py:if="tm.image_mime" src="/test_mean_image/${tm.id}" alt="Image for ${tm.reference}"/>
+
+
+      <py:if test="tm.code_init">
+	<h2>Initialization code</h2>
+
+	<pre class="code">${tm.code_init}</pre>
+	  
+      </py:if>
+
+    </div>
+  </body>
+</html>
+

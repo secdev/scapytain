@@ -1,0 +1,42 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      xmlns:py="http://genshi.edgewall.org/">
+  
+<xi:include href="layout.xml" />
+
+  <head>
+    <title>All test means</title>
+  </head>
+
+
+  <body py:with="baseurl='/test_mean'">
+    
+    <menu />
+    <bigtitle title="All test means"/>
+    <div class="navbar">
+      <a href="/">Home</a> &gt;
+      <a href="/test_mean">Test means</a> &gt;
+    </div>
+    
+    <div class="content">
+    
+      <h1>Available test means</h1>
+	
+      <table class="list">
+       <tr>
+	 <th sortkey="reference">Reference</th>
+	 <th sortkey="name">Name</th>
+	 <th sortkey="description">Description</th>
+	 <th sortkey="image">Image</th>
+       </tr>
+	<tr py:for="tm in sorted(test_means,key=sortkey_getter,reverse=bool(rev))">
+         <td><a href="/test_mean/${tm.id}">${tm.reference}</a></td>
+         <td>${tm.name}</td>
+         <td>${tm.description}</td>
+         <td><img py:if="tm.image_mime" src="/test_mean_image/${tm.id}" alt="Image for ${tm.reference}" height="50"/></td>
+	</tr>
+      </table>
+    </div>
+  </body>
+</html>
+

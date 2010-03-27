@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="no" ?>
+<!DOCTYPE document SYSTEM "rml_1_0.dtd">
+
+<document 
+    xmlns:xi="http://www.w3.org/2001/XInclude"      
+    xmlns:py="http://genshi.edgewall.org/">
+
+  <xi:include href="report_layout.rml" />
+  
+  <template />
+
+  <stylesheet />
+
+  <story>
+    <title>${proj.reference}: ${proj.name}</title>
+    
+    <h1>Requirements</h1>
+
+    <py:for each="req in proj.requirements">
+
+      <h2>${req.reference}: ${req.name}</h2>
+      
+      <para>
+	${req.description}
+      </para>
+      
+      <blockTable style="reqtable" colWidths="2cm,4cm,8cm,4cm,1cm">
+	<tr><td>Reference</td><td>Name</td><td>Description</td><td>Accepted behavior</td><td>Priority</td></tr>
+	<tr py:for="test in req.tests">
+	  <td><para style="tablepara">${test.reference}</para></td>
+	  <td><para style="tablepara">${test.name}</para></td>
+	  <td><para style="tablepara">${test.description}</para></td>
+	  <td><para style="tablepara">${test.expected}</para></td>
+	  <td><para style="tablepara">${test.priority}</para></td>
+	</tr>
+      </blockTable>
+    </py:for>
+
+
+    <h1>Checklists</h1>
+
+    <py:for each="chkl in proj.checklists">
+      <h2>${chkl.reference}: ${chkl.name}</h2>
+      
+      <para>
+	${chkl.description}
+      </para>
+
+      <blockTable style="reqtable" colWidths="2cm,4cm,8cm,5cm">
+	<tr><td>Reference</td><td>Name</td><td>Description</td><td>Tests</td></tr>
+	<tr py:for="req in chkl.requirements">
+	  <td><para style="tablepara">${req.reference}</para></td>
+	  <td><para style="tablepara">${req.name}</para></td>
+	  <td><para style="tablepara">${req.description}</para></td>
+	  <td><para style="tablepara">${", ".join(t.reference for t in req.tests)}</para></td>
+	</tr>
+      </blockTable>
+    </py:for>
+
+
+  </story>
+
+</document>

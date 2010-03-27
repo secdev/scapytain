@@ -1,0 +1,89 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"      
+      xmlns:py="http://genshi.edgewall.org/">
+
+<xi:include href="layout.xml" />
+
+
+  <head>
+    <title>Edit an objective of ${test_plan.reference}</title>
+  </head>
+
+
+  <body>
+    
+    <menu test_plan="${test_plan.id}" />
+    <bigtitle title="Objective description" />
+    <div class="navbar">
+      <a href="/">Home</a> &gt; 
+      <a href="/test_plan">Test Plans</a> &gt; 
+      <a href="/test_plan/${test_plan.id}">${test_plan.reference}</a> &gt;
+    </div>
+
+    <div class="content">
+	
+      <h1>Enter your objective's description</h1>
+
+      <form method="POST" action="$action">
+	<table>
+	  <tr>
+	    <th><label for="ref">Reference</label></th>
+	    <td><input id="ref" name="reference" type="text" size="60"/></td>
+	    <td class="error" py:if="'reference' in errors">${errors.reference}</td>
+	  </tr>
+	  <tr>
+	    <th><label for="name">Name</label></th>
+	    <td> <input id="name" name="name" type="text" size="60" /></td>
+	    <td class="error" py:if="'name' in errors">${errors.name}</td>
+	  </tr>
+	  <tr>
+	    <th><label for="section">Section</label></th>
+	    <td>
+	      <select id="section" name="section" title="section">
+		<option value="none">-- NO SECTION --</option>
+		<option value="new">-- NEW SECTION --</option>
+		<option py:for="sec in test_plan.sections" value="${sec.id}">${sec.name}</option>
+	      </select>
+	    </td>
+	    <td py:if="'section' in errors">${errors.section}</td>
+	  </tr>
+	  <tr>
+	    <th><label for="newsection">New section</label></th>
+	    <td><input id="newsection" name="newsection" type="text" size="60"/></td>
+	    <td class="error" py:if="'newsection' in errors">${errors.newsection}</td>
+	  </tr>
+	  <tr>
+	    <th><label for="prio">Priority</label></th>
+	    <td> <input id="prio" name="priority" type="text" size="60" /></td>
+	    <td class="error" py:if="'priority' in errors">${errors.priority}</td>
+	  </tr>
+	  <tr>
+	    <th><label for="applicable">Applicable</label></th>
+	    <td> <input id="applicable" name="applicable" type="checkbox" checked="1"/></td>
+	    <td class="error" py:if="'applicable' in errors">${errors.applicable}</td>
+	  </tr>
+	  <tr>
+	    <th><label for="desc">Description:</label></th>
+	    <td></td>
+	    <td class="error" py:if="'description' in errors">${errors.description}</td>
+	  </tr>
+	  <tr>
+	    <td colspan="2"><textarea id="desc" name="description" rows="6" cols="80" /></td>
+	  </tr>
+	  <tr>
+	    <th><label for="rationale">Rationale:</label></th>
+	    <td></td>
+	    <td class="error" py:if="'rationale' in errors">${errors.rationale}</td>
+	  </tr>
+	  <tr>
+	    <td colspan="2"><textarea id="rationale" name="rationale" rows="6" cols="80" /></td>
+	  </tr>
+	</table>
+	<input type="submit" value="Go!" />
+      </form>
+
+    </div>
+
+  </body>
+</html>
+

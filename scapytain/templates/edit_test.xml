@@ -1,0 +1,133 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"      
+      xmlns:py="http://genshi.edgewall.org/">
+
+<xi:include href="layout.xml" />
+
+
+  <head>
+    <title>Edit a test</title>
+  </head>
+
+  <body>
+    
+    <menu />
+
+    <bigtitle title="Test description" />
+    <div class="navbar">
+      <a href="/">Home</a> &gt; 
+      <a href="/test/">Tests</a> &gt; 
+    </div>
+    
+    <div class="content">
+      <py:if test="obj">
+        <h1>Creating a test for ${obj.reference}</h1>
+  
+        <h2>Description</h2>
+  
+        <pre class="text">${obj.description}</pre>
+  
+        <h2>Rationale</h2>
+  
+        <p>
+        ${obj.rationale}
+        </p>
+      </py:if>
+
+      <h1>Enter your test description</h1>
+
+      <p class="error" py:if="type(errors) is unicode">${errors}</p>
+
+      <form method="POST" action="${action}">
+	<table>
+	  <tr>
+	    <th><label for="ref">Reference</label></th>
+	    <td><input id="ref" name="reference" type="text" size="60" /></td>
+	    <td class="error" py:if="'reference' in errors">${errors.reference}</td>
+	  </tr>
+
+	  <tr>
+	    <th><label for="name">Name</label></th>
+	    <td> <input id="name" name="name" type="text" size="60" /></td>
+	    <td class="error" py:if="'name' in errors">${errors.name}</td>
+	  </tr>
+
+	  <tr>
+	    <th><label for="test_group">Group</label></th>
+	    <td>
+	      <select id="test_group" name="test_group" title="test_group">
+		<option value="none">-- NO GROUP --</option>
+		<option value="new">-- NEW GROUP --</option>
+		<option py:for="grp in test_groups" value="${grp.id}">${grp.name}</option>
+	      </select>
+	    </td>
+	    <td py:if="'test_group' in errors">${errors.test_group}</td>
+	  </tr>
+	  <tr>
+	    <th><label for="new_group">New group</label></th>
+	    <td><input id="new_group" name="new_group" type="text" size="60"/></td>
+	    <td class="error" py:if="'new_group' in errors">${errors.new_group}</td>
+	  </tr>
+
+
+	  <tr>
+	    <th><label for="desc">Description:</label></th>
+	    <td></td>
+	    <td class="error" py:if="'description' in errors">${errors.description}</td>
+	  </tr>
+	  <tr>
+	    <td colspan="2"><textarea id="desc" name="description" rows="6" cols="80" /></td>
+	  </tr>
+
+	  <tr>
+	    <th><label for="expected_result">Expected result:</label></th>
+	    <td></td>
+	    <td class="error" py:if="'expected_result' in errors">${errors.expected_result}</td>
+	  </tr>
+	  <tr>
+	    <td colspan="2"><textarea id="expected_result" name="expected_result" rows="4" cols="80" /></td>
+	  </tr>
+
+	  <tr>
+	    <th><label for="code">Test code:</label></th>
+	    <td></td>
+	    <td class="error" py:if="'code' in errors">${errors.code}</td>
+	  </tr>
+	  <tr>
+	    <td colspan="2"><textarea class="code" id="code" name="code" rows="25" cols="80" /></td>
+	  </tr>
+
+	  <tr>
+	    <th><label for="comment">Comment on code:</label></th>
+	    <td></td>
+	    <td class="error" py:if="'comment' in errors">${errors.comment}</td>
+	  </tr>
+	  <tr>
+	    <td colspan="2"><textarea id="comment" name="comment" rows="2" cols="80" /></td>
+	  </tr>
+
+	  <tr>
+	    <th><label for="dependencies">Test depends on</label></th>
+	    <td> 
+	      <select multiple="multiple" size="${len(list(tspecs))}" id="dependencies" 
+		      name="dependencies" title="dependencies">
+		<py:for each="ts in tspecs">
+		  <py:with vars="text='%s: %s' % (ts.reference, ts.name)">
+		    <option value="${ts.id}">${text}</option>
+		  </py:with>
+		</py:for>
+
+	      </select>
+	    </td>
+	    <td class="error" py:if="'dependencies' in errors">${errors.dependencies}</td>
+	  </tr>
+
+	</table>
+	<input type="submit" value="Go!" />
+      </form>
+
+    </div>
+
+  </body>
+</html>
+

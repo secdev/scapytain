@@ -1,0 +1,40 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      xmlns:py="http://genshi.edgewall.org/">
+  
+<xi:include href="layout.xml" />
+
+  <head>
+    <title>Deleting ${object}</title>
+  </head>
+
+
+  <body>
+    
+
+    <menu py:attrs="menu" />
+    <bigtitle title="Deleting ${object}" />
+    <div class="navbar">
+      <a href="/">Home</a> &gt; 
+    </div>
+
+    <div class="content">
+      <h1>Deleting ${object}</h1>
+
+	
+      <p py:choose="">
+	<span py:when="error" class="error">Error: $error</span>
+	<span py:otherwise="">
+	  <form method="POST" action="$action">
+	    <table><tr>
+	      <td>Are you sure ?</td>
+	      <td><input type="submit" value="Delete" /></td>
+	    </tr></table>
+	  </form>
+	</span>
+      </p>
+
+    </div>
+  </body>
+</html>
+

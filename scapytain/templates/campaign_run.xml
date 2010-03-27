@@ -1,0 +1,104 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      xmlns:py="http://genshi.edgewall.org/">
+  
+<xi:include href="layout.xml" />
+
+  <head>
+    <title>Campaign run ${run.reference}</title>
+  </head>
+
+
+  <body py:with="camp=run.campaign">
+    
+    <menu campaign="${camp.id}" run="${run.id}"/>
+
+    <bigtitle title="Campaign description" />
+    <div class="navbar">
+      <a href="/">Home</a> &gt; 
+      <a href="/campaign/">Campaigns</a> &gt;
+      <a href="/campaign/${camp.id}">${camp.reference}</a> &gt;
+      <a href="/campaign_run/${run.id}">${run.reference}</a> &gt;
+    </div>
+    
+    <div class="content">
+
+      <h1>${run.reference}: ${run.name}</h1>
+
+      <form method="POST" action="/launch_run/${run.id}"><input type="submit" value="Run remaining tests" /></form>
+      <form method="POST" action="/run_from_failed/${run.id}"><input type="submit" value="Create run from failed tests" /></form>
+
+      <h2 py:if="run.test_mean">Test mean: <a href="/test_mean/${run.test_mean.id}">${run.test_mean.reference}: ${run.test_mean.name}</a></h2>
+
+      <h2>Test Plans</h2>
+      
+      <table class="list">
+	<tr><th>Reference</th><th>Name</th><th>Description</th><th>#objectives</th></tr>
+	<tr py:for="test_plan in camp.test_plans">
+	  <td><a href="/test_plan/${test_plan.id}">${test_plan.reference}</a></td>
+	  <td>${test_plan.name}</td>
+	  <td>${test_plan.description}</td>
+	  <td>${len(list(test_plan.objectives))}</td>
+	</tr>
+      </table>
+	
+      
+
+      <h2>Description</h2>
+      <p>
+	${run.description}
+      </p>
+
+      <h2>Context</h2>
+      <p>
+	${run.context}
+      </p>
+
+      <h2>Results</h2>
+
+      <py:for each="test_planr in run.test_plan_results">
+
+	<h3>${test_planr.test_plan.reference}: ${test_planr.test_plan.name}</h3>
+	
+	<table class="list">
+	  <tr><th>Objective</th><th>Test</th><th>Name</th><th>Status</th></tr>
+	  <py:for each="objr in test_planr.objective_results">
+	    <py:for each="res in objr.results">
+	      <tr class="${res.status.css_class}">
+		<py:with vars="tst=res.test.test_spec">
+		  <td><a href="/objective/${objr.objective.id}">${objr.objective.reference}</a></td>
+		  <td><a href="/test/${tst.id}">${tst.reference} v${res.test.version}/${len(list(tst.tests))}</a></td>
+		  <td>${tst.name}</td>
+		  <td><a href="/result/$res.id">${res.status.status}</a></td>
+		</py:with>
+	      </tr>
+	    </py:for>
+	  </py:for>
+	</table>
+      </py:for>
+
+      <py:with vars="depres=[r for r in run.results if r.is_dependency]">
+	<py:if test="depres">
+	       
+	  <h2>Dependency tests</h2>
+	  
+	  <table class="list">
+	    <tr><th>Test</th><th>Name</th><th>Status</th></tr>
+	    <py:for each="res in depres">
+	      <tr class="${res.status.css_class}">
+		<py:with vars="tst=res.test.test_spec">
+		  <td><a href="/test/${tst.id}">${tst.reference}</a></td>
+		  <td>${tst.name}</td>
+		  <td><a href="/result/$res.id">${res.status.status}</a></td>
+		</py:with>
+	      </tr>
+	    </py:for>
+	  </table>
+	  
+	</py:if>
+      </py:with>
+
+    </div>
+  </body>
+</html>
+

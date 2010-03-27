@@ -1,0 +1,39 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      xmlns:py="http://genshi.edgewall.org/">
+  
+<xi:include href="layout.xml" />
+
+  <head>
+    <title>All Test Plans</title>
+  </head>
+
+
+  <body py:with="baseurl='/test_plan'">
+    
+    <menu />
+    <bigtitle title="All Test Plans"/>
+    <div class="navbar">
+      <a href="/">Home</a> &gt;
+      <a href="/test_plan">Test Plans</a> &gt;
+    </div>
+    
+    <div class="content">
+    
+      <h1>Available test plans</h1>
+	
+      <table class="list">
+       <tr>
+	 <th sortkey="reference">Reference</th>
+	 <th sortkey="name">Name</th>
+	 <th sortkey="nbobj">#Obj</th>
+       </tr>
+	<tr py:for="l in sorted(test_plans,key=sortkey_getter, reverse=bool(rev))">
+         <td><a href="/test_plan/${l.id}">${l.reference}</a></td>
+         <td>${l.name}</td>
+         <td>${len(l.objectives)}</td>
+	</tr>
+      </table>
+    </div>
+  </body>
+</html>

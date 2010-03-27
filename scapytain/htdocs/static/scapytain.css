@@ -1,0 +1,357 @@
+body, div.menu, div.bigtitle, div.footer, div.navbar, div.navbar a:hover, div.navbar a:focus, div.navbar a:active {
+	background: #77bbff;
+}
+h1, h2, h3, h4 {
+	color: #4466cc;
+}
+
+a:hover, a:focus, a:active, td a:hover, td a:focus, td a:active, tr a:hover, tr a:focus, tr a:active, span.error { 
+    background-color:#00c; 
+}
+
+
+
+body {
+	margin: 0px;
+	padding: 0px;
+	font-family: 'Trebuchet MS',Verdana,Arial,Helvetica,Geneva,sans-serif;
+	font-size: 98%; /* fixes IE font too big problems */
+	/*Font size value for IE4/5 on Windows*/
+	voice-family: "\"}\"";
+	voice-family:inherit;
+	font-size: 100.01%; /* Prevents a bug in Opera and fixes IE font problems */
+}
+
+
+pre {margin-left: 20px; font-family: "Courier New",Courier,Monaco,monospace;}
+tt {font-size: 100%; font-family: "Courier New",Courier,Monaco,monospace;}
+
+
+
+/* General purpose formatting */
+
+h1, h2, h3, h4 {
+	font-weight: bold;
+	margin-left: 10px;
+}
+h1 {font-size: 218%;margin-top: 1.0em;}
+h2 {font-size: 164%;margin-top: 1.0em;}
+h3 {font-size: 118%;margin-top: 1.5em;}
+h4 {font-size: 108%;margin-top: 1.0em;}
+
+/* reduce space between a h1 and the following h2 */
+h1 + h2 {margin-top: 0}
+h2 + h3 {margin-top: 0}
+
+
+
+a { color: inherit; text-decoration:inherit}
+
+td a, tr a { 
+       display: block;
+       text-decoration: none;
+       color: #00c;
+}
+
+td a:hover, td a:focus, td a:active, tr a:hover, tr a:focus, tr a:active { 
+        display: block; 
+        color: #ff3;
+}
+
+td a.noblock { 
+        display: inherit;
+}
+
+a img, a:hover img, a:focus img, a:active img {border: 0px; border-style: solid}
+
+span.error { 
+    color: #ff0;
+    font-size: 130%;
+    font-style: italic;
+}
+
+div.menu {
+        border: none;
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-top: 30px;
+        padding-bottom: 30px;
+        margin-top: 0px;
+	margin-right: 0px;
+        text-align: left;
+
+	position: fixed;
+	width: 180px;
+	height: auto;
+	top: 0px;
+	right: auto;
+	bottom: auto;
+	left: 0px;
+}
+
+div.menu a { 
+       color: #ffffff;
+       background-color: inherit;
+}
+
+div.menu td {
+	border:solid #3333ff 1px;
+        margin: 0px;
+  	background-color: #4466cc;
+        color: #ffffff;
+}
+
+div.menu td:hover, div.menu td:focus, div.menu td:active, div.menu td a:focus {
+	background: #004499; 
+}
+
+span.block { 
+        display: block;
+        padding-left: 30px;
+        border: 1px;
+        text-indent: -1em;                      
+}
+
+/* Main part of the page: bigtitle/navbar/content/footer */
+
+div.main {
+	border: none;
+	position: absolute;
+	width: auto;
+	height: auto;
+	top: 0px;
+	right: 5px;
+	bottom: auto;
+	left: 200px;
+	margin-bottom: 5px;
+	background: #ffffff;
+}
+div.bigtitle {
+	border: none;
+	padding: 10px 10px 10px 10px;
+        margin-top: 0px;
+	color: #ffffff;
+	font-size: 300%;
+	height: 80px;
+}
+
+div.footer {
+        color: #ffffff;
+	width: 100%;
+}
+
+div.content {
+	border: solid #3333ff 1px;
+	width: auto;
+	height: auto;
+	margin: 0px 0px 0px 0px;
+	padding: 2px 2px 2px 2px;
+}
+	
+div.navbar {
+	font-weight: bold;
+	color: #cccc44;
+	padding: 5px 5px 5px 10px;
+	line-height: 1.4em;
+	height: auto;
+	width: auto;
+}
+div.navbar a {
+	color: #666622;
+	text-decoration: none;
+}
+div.navbar a:hover, div.navbar a:focus, div.navbar a:active {
+	color: #f00;
+}
+
+@media print {
+	body { background: #ffffff; }
+	div.header { position: static; color: #000000; background: #ffffff; 
+                    height: auto; }
+	div.navbar { position: static; height: auto;}
+	div.menu { visibility: hidden; }
+
+	div.main{
+		position: static;
+		top: auto;
+		right: 0;
+		bottom: 0;	
+		left: 0;
+		width:100%;
+		height: auto;
+	}
+}
+
+
+pre.code, pre.hl {
+        border: solid #0000ff 1px;
+        color: #000000;
+        white-space: pre-wrap;       /* css-3 */
+        white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+        white-space: -pre-wrap;      /* Opera 4-6 */
+        white-space: -o-pre-wrap;    /* Opera 7 */
+        word-wrap: break-word;       /* Internet Explorer 5.5+ */
+        background-color: #ffffd0;
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        margin-top: 0px;
+        text-align: left;
+        margin-left: auto;
+        margin-right: auto;
+        font-family:    Monospace, Prestige, Everson Mono, Courier, Courier, MS Courier New;
+        font-style: normal;
+        font-size: 16px;
+}
+
+
+
+
+pre.hl span.num    { color:#2928ff; }
+pre.hl span.esc    { color:#830000; }
+pre.hl span.str    { color:#c00000; }
+pre.hl span.dstr   { color:#818100; }
+pre.hl span.slc    { color:#838183; font-style:italic; }
+pre.hl span.com    { color:#838183; font-style:italic; }
+pre.hl span.dir    { color:#ff0000; }
+pre.hl span.sym    { color:#000000; }
+pre.hl span.line   { color:#555555; }
+pre.hl span.blue   { color:#0000ff; font-style:italic; }
+pre.hl span.kwa    { color:#000000; font-weight:bold; }
+pre.hl span.kwb    { color:#00a000; }
+pre.hl span.kwc    { color:#00a000; }
+
+span.prompt { color: #0000ff; font-weight: bold; }
+span.not_printable { color: #a0a0a0; }
+span.layer_name { color: #ff0000; font-weight: bold; }
+span.field_name { color: #0000ff; }
+span.field_value { color: #ff00ff; }
+span.emph_field_name { color: #0000ff; font-weight: bold; text-decoration: underline }
+span.emph_field_value { color: #ff00ff; font-weight: bold; text-decoration: underline }
+span.packetlist_name { color: #ff0000; font-weight: bold; }
+span.packetlist_proto { color: #0000ff; }
+span.packetlist_value { color: #ff00ff; }
+span.fail { color: #ff0000; font-weight: bold; }
+span.success { color: #0000ff; font-weight: bold; }
+span.even { color: #000000; font-weight: bold; }
+span.odd { color: #000000; }
+span.opening { color: #00ffff; }
+span.active { color: #000000; }
+span.closed { color: #808080; }
+
+
+table.list { 
+	border:solid #0000ff 1px;
+        margin-left: 10px;
+        margin-right: 10px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+	border-collapse: collapse;
+}
+
+table.list th {
+	background-color: #d0ffff;
+        padding-left: 10px;
+        padding-right: 10px;
+	border:solid #6666ff 1px;
+}
+
+table.list th a { color: inherit; }
+table.list th a:hover,table.list th a:focus,table.list th a:active { color: #cc0; }
+
+table.list td {
+        vertical-align: text-top;
+        padding-left: 10px;
+        padding-right: 10px;
+	border:solid #6666ff 1px;
+}
+
+table.list pre.code { 
+        border: 0px;
+        font-size: 10px;
+	background-color: inherit;
+
+}
+pre.text { 
+      font-family: inherit; 
+      font-size: inherit;
+      font-style: inherit;
+      margin-top: 0px;
+      margin-bottom: 0px;
+      margin-right: 0px;
+      margin-left: 0px;
+
+}
+
+table.list tr { background-color: #ffffd0; }
+span.test_absent, table.list tr.test_absent, table.list td.test_absent { background-color: #bbb; }
+span.test_not_completed, table.list tr.test_not_completed, table.list td.test_not_completed { background-color: #aaa; }
+span.test_not_done, table.list tr.test_not_done, table.list td.test_not_done { background-color: #ddd; }
+span.test_stopped, table.list tr.test_stopped, table.list td.test_stopped { background-color: #c0c050; }
+span.test_passed, table.list tr.test_passed, table.list td.test_passed { background-color: #0f0; }
+span.test_failed, table.list tr.test_failed, table.list td.test_failed { background-color: #f00; }
+span.test_outdated_failed, table.list tr.test_outdated_failed, table.list td.test_outdated_failed { background-color: #c77; }
+span.test_outdated_passed, table.list tr.test_outdated_passed, table.list td.test_outdated_passed { background-color: #7c7; }
+span.test_dependency_failed, table.list tr.test_dependency_failed, table.list td.test_dependency_failed { background-color: #c33; }
+table.list tr:hover { background-color: #d0d0ff; }
+
+table.list tr.not_applicable { background-color: #cccca0; }
+
+
+
+form table { 
+        padding-left: 10px;
+        padding-right: 10px;
+}
+form tr {
+        background-color: #d0d0ff;
+}
+
+td.error { 
+        background-color: #ffffff;
+        color: #f00;
+        font-style: italic;
+}
+
+p.error { 
+        color: #f00;
+        font-style: italic;
+}
+
+
+td.nb { 
+        text-align: right;
+}
+
+textarea, input { 
+	font-family: inherit; /*'Trebuchet MS',Verdana,Arial,Helvetica,Geneva,sans-serif;*/
+        font-size: 90%;
+}
+
+textarea.code { 
+        font-family:    Monospace, Prestige, Everson Mono, Courier, Courier, MS Courier New;
+        font-style: normal;
+}
+table.diff { 
+        font-family:    Monospace, Prestige, Everson Mono, Courier, Courier, MS Courier New;
+        font-style: normal;
+        font-size: 80%;
+        padding-left: 10px;
+        padding-right: 10px;
+	border:solid #6666ff 1px;
+        
+}
+
+table.diff td { 
+        padding-left: 10px;
+        padding-right: 10px;
+}
+table.diff td.diff_next, table.diff td.diff_header { 
+        padding-left: 0px;
+        padding-right: 0px;
+}
+
+td span.diff_sub { background-color: #f88; }
+td span.diff_add { background-color: #8f8; }
+td span.diff_chg { background-color: #cc4; }

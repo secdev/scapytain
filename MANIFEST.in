@@ -1,0 +1,5 @@
+include MANIFEST.in
+include scapytain/scapytainrc
+recursive-include doc *
+recursive-include scapytain/templates *
+recursive-include scapytain/htdocs *
