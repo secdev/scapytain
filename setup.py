@@ -4,7 +4,7 @@ from distutils.core import setup
 
 setup(
     name = 'scapytain',
-    version = '0.3beta',
+    version = '0.3.1beta',
     packages=['scapytain'],
     package_data = {'scapytain':['templates/*.[xr]ml', 'htdocs/*/*']},
     data_files = [ ('/etc',['scapytain/scapytainrc']) ] ,
