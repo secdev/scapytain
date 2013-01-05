@@ -26,7 +26,7 @@
     <div class="content">
       <h1>${test_plan.reference}: ${test_plan.name}</h1>
 
-      <pre class="text">${test_plan.description.strip()}</pre>
+      <pre class="text"><py:if test="test_plan.description">${test_plan.description.strip()}</py:if></pre>
 
       <py:if test="test_plan.sections and not sortkey">
 	<h2>Table of sections</h2>
@@ -48,7 +48,7 @@
 	  <tr py:def="objrow(obj)" class="${['not_applicable','applicable'][obj.applicable]}">
 	    <td><a href="/objective/${obj.id}">${obj.reference}</a></td>
 	    <td>${obj.name}</td>
-	    <td py:if="extended_view"><pre class="text">${obj.description.strip()}</pre></td>
+	    <td py:if="extended_view"><pre class="text"><py:if test="obj.description">${obj.description.strip()}</py:if></pre></td>
 	    <td class="nb">${obj.priority}</td>
 	    <td class="nb">${len(obj.tests)}</td>
 	    <td>${["no","yes"][obj.applicable]}</td>
