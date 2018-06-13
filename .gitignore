@@ -1,0 +1,7 @@
+*.pyc
+*.pyo
+*.db
+dist/
+build/
+MANIFEST
+*.egg-info/

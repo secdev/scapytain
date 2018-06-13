@@ -3,10 +3,11 @@
 ## Copyright (C) Philippe Biondi <phil@secdev.org>
 ## This program is published under a GPLv2 license
 
+from __future__ import absolute_import
 import formencode
 from formencode import validators
 from formencode import compound
-import dbobjects
+from . import dbobjects
 from sqlobject import SQLObjectNotFound
 
 # SQL objects
@@ -16,7 +17,7 @@ class SQLObjectId(formencode.FancyValidator):
         sqlid = validators.Int().to_python(value)
         try:
             return self._sqlobject.get(sqlid)
-        except SQLObjectNotFound,e:
+        except SQLObjectNotFound as e:
             raise formencode.Invalid(str(e), value, state)
     def _from_python(self, value, state):
         return value.id

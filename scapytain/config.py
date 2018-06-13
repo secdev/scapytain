@@ -5,9 +5,10 @@
 ## Copyright (C) Philippe Biondi <phil@secdev.org>
 ## This program is published under a GPLv2 license
 
+from __future__ import absolute_import
 import os,logging
 from threading import Semaphore
-import ConfigParser
+import six.moves.configparser
 log = logging.getLogger("scapytain")
 console_handler = logging.StreamHandler()
 console_handler.setFormatter(logging.Formatter("%(levelname)s: %(message)s"))
@@ -18,8 +19,8 @@ class conf:
     _loaded = False
     _sem = Semaphore(1)
     # paths
-    templates_path = os.path.join(os.path.dirname(__file__), 'templates')
-    static_path = os.path.join(os.path.dirname(__file__), 'htdocs')
+    templates_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'templates'))
+    static_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'htdocs'))
     highlight_path = "highlight"
     scapy_path = "scapy"
     scapyproxy_path = "scapytain_scapyproxy"
@@ -30,7 +31,8 @@ class conf:
     ssl_certificate = None
     ssl_key = None
     auth = True
-    database = "sqlite://"+os.path.abspath("scapytain.db")
+    database = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "scapytain.db")).replace("\\", "/")
+    db = "sqlite:/" + database
     loglevel=1
     # users
     users = {}
@@ -40,7 +42,7 @@ def get_config(configfile=None):
     conf._sem.acquire()
     if not conf._loaded:
         
-        config = ConfigParser.ConfigParser()
+        config = six.moves.configparser.ConfigParser()
         if configfile is None:
             configfile=['scapytainrc',os.path.expanduser('~/.scapytainrc'),'/etc/scapytainrc']
         cf=config.read(configfile)
@@ -74,6 +76,7 @@ def get_config(configfile=None):
                         conf.auth = config.getboolean(sec, opt)
                     elif opt == "database":
                         conf.database = optarg
+                        conf.db = "sqlite:/" + database
                 elif sec == "users":
                     conf.users = dict(config.items(sec))
     

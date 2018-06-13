@@ -3,7 +3,9 @@
 ## Copyright (C) Philippe Biondi <phil@secdev.org>
 ## This program is published under a GPLv2 license
 
+from __future__ import absolute_import
 import operator
+from six.moves import zip
 
 class KeyMaker:
     def __init__(self, *args, **kargs):
@@ -26,7 +28,7 @@ class KeyMaker:
         if type(name) is str:
             sk = name.split(",")
             if sk:
-                names,getters = zip(*[(x,self.getter_one(x)) for x in sk if x in self])
+                names,getters = list(zip(*[(x,self.getter_one(x)) for x in sk if x in self]))
                 return list(names),lambda x:tuple( g(x) for g in getters )
         return [],self.default
         

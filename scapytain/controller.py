@@ -5,29 +5,34 @@
 ## Copyright (C) Philippe Biondi <phil@secdev.org>
 ## This program is published under a GPLv2 license
 
+from __future__ import absolute_import
+from __future__ import print_function
 import os
+from . import sortkeys
+import difflib
+import time, datetime
+
 import cherrypy
 import formencode
-from formencode import validators,variabledecode
+from formencode import validators, variabledecode
+import genshi
 from genshi.template import TemplateLoader
 from genshi.filters import HTMLFormFiller
 from genshi.builder import tag
-import genshi
-import trml2pdf
-from dbobjects import *
-from error import ScapytainException
-import validate
-from highlight import highlight_python
-import scapy_proxy
-import logging
-import config
 import sqlobject
-import sortkeys
-import difflib
-import time,datetime
-#from sqlobject import SQLObjectIntegrityError
-# SQLObjectIntegrityError is not exported => dirty hack. XXX
-SQLObjectIntegrityError = sqlobject.SQLObject.destroySelf.im_func.func_globals["SQLObjectIntegrityError"]
+from sqlobject import SQLObjectIntegrityError
+import trml2pdf
+import logging
+
+from . import config
+from . import validate
+from . import dbobjects
+from .dbobjects import *
+from .error import ScapytainException
+from .highlight import highlight_python
+from . import scapy_proxy
+import six
+
 
 log = logging.getLogger("scapytain")
 
@@ -75,7 +80,7 @@ class Root(object):
         if cherrypy.request.method == 'POST':
             try:
                 valid_data = validate.Test_Plan().to_python(post_data)
-            except formencode.Invalid, e:
+            except formencode.Invalid as e:
                 errors = e.unpack_errors()
                 data = post_data
             else:
@@ -85,7 +90,7 @@ class Root(object):
                     else:
                         test_plan.set(**valid_data)
                     if uts_file is not None:
-                        import_uts_data(uts_data=uts_file.value, test_plan=test_plan, add_dependency=uts_dependency)
+                        import_uts_data(uts_data=uts_file.file.read(), test_plan=test_plan, add_dependency=uts_dependency)
                     return test_plan
                 test_plan = DO_TXN(txn,test_plan)
                 raise cherrypy.HTTPRedirect("/test_plan/%i" % test_plan.id)
@@ -103,8 +108,8 @@ class Root(object):
             
         if cherrypy.request.method == 'POST':
             try:
-                lst = [(validate.SectionId().to_python(k),v) for k,v in post_data.iteritems()]
-            except formencode.Invalid, e:
+                lst = [(validate.SectionId().to_python(k),v) for k,v in six.iteritems(post_data)]
+            except formencode.Invalid as e:
                 errors = e.unpack_errors()
                 data = post_data
             else:
@@ -146,7 +151,7 @@ class Root(object):
         if cherrypy.request.method == 'POST':
             try:
                 valid_data = validate.Objective().to_python(post_data)
-            except formencode.Invalid, e:
+            except formencode.Invalid as e:
                 errors = e.unpack_errors()
                 data = post_data
             else:
@@ -311,7 +316,7 @@ class Root(object):
                                              error_dict={"dependencies":
                                                          formencode.Invalid(msg="Cyclic reference",
                                                                             value=0, state=None)})
-            except formencode.Invalid, e:
+            except formencode.Invalid as e:
                 errors = e.unpack_errors()
                 data = post_data
             else:
@@ -377,7 +382,7 @@ class Root(object):
         if cherrypy.request.method == 'POST':
             try:
                 valid_data = validate.Test_Code().to_python(post_data)
-            except formencode.Invalid, e:
+            except formencode.Invalid as e:
                 errors = e.unpack_errors()
                 data = post_data
             else:
@@ -477,7 +482,7 @@ class Root(object):
         if cherrypy.request.method == 'POST':
             try:
                 valid_data = validate.Objective_Tests().to_python(post_data)
-            except formencode.Invalid, e:
+            except formencode.Invalid as e:
                 errors = e.unpack_errors()
                 data = post_data
             else:
@@ -547,7 +552,7 @@ class Root(object):
         if cherrypy.request.method == 'POST':
             try:
                 valid_data = validate.TestMean().to_python(post_data)
-            except formencode.Invalid, e:
+            except formencode.Invalid as e:
                 errors = e.unpack_errors()
                 data = post_data
             else:
@@ -557,8 +562,8 @@ class Root(object):
                     else:
                         test_mean.set(**valid_data)
     
-                    if image is not None and image.value:
-                        test_mean.set(image=image.value, image_mime=image.type)
+                    if image is not None:
+                        test_mean.set(image=image.file.read(), image_mime=image.type)
                     return test_mean
                 test_mean = DO_TXN(txn,test_mean)
                 raise cherrypy.HTTPRedirect("/test_mean/%i" % test_mean.id)
@@ -608,7 +613,7 @@ class Root(object):
                 if post_data["test_mean"] == "none":
                     post_data["test_mean"] = None
                 valid_data = validate.Campaign().to_python(post_data)
-            except formencode.Invalid, e:
+            except formencode.Invalid as e:
                 errors = e.unpack_errors()
                 data = post_data
             else:
@@ -671,7 +676,7 @@ class Root(object):
                 if post_data["test_mean"] == "none":
                     post_data["test_mean"] = None
                 valid_data = validate.Campaign_Run().to_python(post_data)
-            except formencode.Invalid, e:
+            except formencode.Invalid as e:
                 errors = e.unpack_errors()
                 data = post_data
             else:
@@ -809,7 +814,7 @@ class Root(object):
                                 o.removeTest(tcode)
                                 o.addTest(latest_tcode)
                 DO_TXN(txn)
-            except Exception,e:
+            except Exception as e:
                 error=str(e)
             else:
                 raise cherrypy.HTTPRedirect("/test_plan/%i"%test_plan.id)
@@ -838,7 +843,7 @@ class Root(object):
                         s.destroySelf()
                     test_plan.destroySelf()
                 DO_TXN(txn)
-            except SQLObjectIntegrityError,e:
+            except SQLObjectIntegrityError as e:
                 error=str(e)
             else:
                 raise cherrypy.HTTPRedirect("/test_plan/")
@@ -856,7 +861,7 @@ class Root(object):
             test_plan = obj.test_plan
             try:
                 DO_TXN(obj.destroySelf)
-            except SQLObjectIntegrityError,e:
+            except SQLObjectIntegrityError as e:
                 error=str(e)
             else:
                 raise cherrypy.HTTPRedirect("/test_plan/%i"%test_plan.id)
@@ -875,7 +880,7 @@ class Root(object):
         if cherrypy.request.method == 'POST':
             try:
                 DO_TXN(camp.destroySelf)
-            except SQLObjectIntegrityError,e:
+            except SQLObjectIntegrityError as e:
                 error=str(e)
             else:
                 raise cherrypy.HTTPRedirect("/campaign/")
@@ -897,7 +902,7 @@ class Root(object):
                         tcode.destroySelf()
                     tspec.destroySelf()
                 DO_TXN(txn)
-            except SQLObjectIntegrityError,e:
+            except SQLObjectIntegrityError as e:
                 error=str(e)
             else:
                 raise cherrypy.HTTPRedirect("/test/")
@@ -930,7 +935,7 @@ class Root(object):
                         Test(test_spec=tspec, version=1, code="")
                         
                 DO_TXN(txn)
-            except SQLObjectIntegrityError,e:
+            except SQLObjectIntegrityError as e:
                 error=str(e)
             else:
                 raise cherrypy.HTTPRedirect("/test/%i"%tspec.id)
@@ -948,7 +953,7 @@ class Root(object):
         if cherrypy.request.method == 'POST':
             try:
                 DO_TXN(tm.destroySelf)
-            except SQLObjectIntegrityError,e:
+            except SQLObjectIntegrityError as e:
                 error=str(e)
             else:
                 raise cherrypy.HTTPRedirect("/test_mean/")
@@ -972,7 +977,10 @@ class Root(object):
         return trml2pdf.parseString(stream.render())
 
 def main(*args):
-    db = conf.database
+    if not os.path.exists(conf.database):
+        print("No database file detected, creating one...")
+        dbobjects.main([None, "-c"])
+    db = conf.db
     import sqlobject
     def connectdb(thread_index):
         sqlobject.sqlhub.threadConnection = sqlobject.connectionForURI(db)
@@ -984,7 +992,7 @@ def main(*args):
                                          (res[0].value, DB_VERSION))
         except ScapytainException:
             raise
-        except Exception,e:
+        except Exception as e:
             raise ScapytainException("Error while checking database version (%s)" % e)
             
 
@@ -1007,7 +1015,7 @@ def main(*args):
                                  'tools.staticfile.filename': os.path.join(conf.static_path,'images/favicon.ico')},
                }
     if conf.auth:
-        cpconf['/'] = { 'tools.digest_auth.on': True,
+        cpconf['/'] = { 'tools.digest_auth.on': len(conf.users) != 0,
                         'tools.digest_auth.realm': 'Scapytain',
                         'tools.digest_auth.users': conf.users }
 
@@ -1019,7 +1027,10 @@ def main(*args):
         'server.ssl_private_key': conf.ssl_key,
         })
     if conf.production:
-        cherrypy.config.update({"environment":"production"})
+        cherrypy.config.environments["production"] = {
+            'request.show_tracebacks': True,
+            'request.show_mismatched_params': True,
+        }
 
     cherrypy.engine.start()
     cherrypy.engine.block()

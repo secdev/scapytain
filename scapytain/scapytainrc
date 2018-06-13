@@ -5,7 +5,7 @@
 # ssl_key = 
 # production = True
 # auth = True
-# database = sqlite:///var/lib/scapytain/scapytain.db
+# database = /var/lib/scapytain/scapytain.db
 
 [paths]
 # static =

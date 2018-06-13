@@ -5,7 +5,9 @@
 ## Copyright (C) Philippe Biondi <phil@secdev.org>
 ## This program is published under a GPLv2 license
 
-import sys,os
+from __future__ import print_function
+
+import sys, os
 from sqlobject import *
 import logging
 import re
@@ -120,7 +122,7 @@ class Status(SQLObject):
 
 def open_database(db, create=False):
     if "://" not in db:
-        db = "sqlite://"+os.path.abspath(db)
+        db = "sqlite:/"+os.path.abspath(db)
     log.info("Opening DB [%s]" % db)
     sqlhub.processConnection=connectionForURI(db)
     if not create:
@@ -143,11 +145,11 @@ def get_all_tables():
 
 def create_tables():
     for o in get_all_tables():
-        print "Creating table [%s]" % o.__name__
+        print("Creating table [%s]" % o.__name__)
         o.createTable()
-    print "Populating Meta table"
+    print("Populating Meta table")
     Meta(tag="dbversion", value=DB_VERSION)
-    print "Populating status table"
+    print("Populating status table")
     Status(status="Not done", css_class="test_not_done")
     Status(status="Stopped", css_class="test_stopped")
     Status(status="Failed", css_class="test_failed")
@@ -161,7 +163,7 @@ def dump_table(t):
     import pprint
     cols = t.sqlmeta.columns.keys()
     table=[cols]
-    print "Dumping table [%s]" % t.__name__
+    print("Dumping table [%s]" % t.__name__)
     for row in t.select():
         table.append([getattr(row,k) for k in cols])
     pprint.pprint(table)
@@ -174,7 +176,7 @@ def counter(fmt="%i",start=0):
 
 
 def import_uts_file(uts_file, *args,**kargs):
-    uts_data = open(campaign_file).read()
+    uts_data = open(uts_file).read()
     return import_uts_data(uts_data, *args,**kargs)
 
 def import_uts_data(uts_data, test_plan=None, test_plan_ref=None, testref="TEST%03i", objref="OBJ%03i", add_dependency=False):
@@ -225,7 +227,7 @@ def import_uts_data(uts_data, test_plan=None, test_plan_ref=None, testref="TEST%
 
 
 def usage():
-    print >>sys.stderr, """usage:
+    print("""usage:
     dbobjects -h
     dbobjects [-D database] {-c|-d|-l}
     dbobjects [-D database] -U <file.uts> [-T <test_plan_ref> [-o <objref_fmt>]] [-t <testref_fmt>]
@@ -237,12 +239,13 @@ def usage():
     -T: test plan reference. If provided with -U, create a test plan for imported tests
     -o: objectives reference template (default: "OJB%03i")
     -t: test reference template (default: "TEST%03i")
-    """
+    """, file=sys.stderr)
 
-def main(argv):
+def main(argv, conf=None):
     import getopt
     import config
-    conf = config.get_config()
+    if conf is None:
+        conf = config.get_config()
 
     INTERACT,CREATE,LIST,DUMP,IMPORT_UTS = range(5)
     ACTION=None
@@ -254,7 +257,7 @@ def main(argv):
     DRYRUN=False
     
     try:
-        opts = getopt.getopt(sys.argv[1:],"hD:t:icdlU:T:o:t:n")
+        opts = getopt.getopt(argv[1:],"hD:t:icdlU:T:o:t:n")
         for opt,optarg in opts[0]:
             if opt == "-h":
                 usage()
@@ -279,19 +282,19 @@ def main(argv):
         if ACTION is None:
             raise getopt.GetoptError("No action provided")
     except getopt.GetoptError,e:
-        print >>sys.stderr,"ERROR: %s" % e
+        print("ERROR: %s" % e, file=sys.stderr)
         sys.exit(-1)
 
     if ACTION == CREATE:
         dbdir = os.path.dirname(DB)
         if not os.path.exists(dbdir):
             os.makedirs(dbdir)
-            print "Created directory [%s]" % dbdir
+            print("Created directory [%s]" % dbdir)
 
     open_database(DB, create=(ACTION==CREATE))
     if ACTION == LIST:
         for o in get_all_tables():
-            print o.__name__
+            print(o.__name__)
     elif ACTION == CREATE:
         create_tables()
     elif ACTION == DUMP:

@@ -3,9 +3,11 @@
 ## Copyright (C) Philippe Biondi <phil@secdev.org>
 ## This program is published under a GPLv2 license
 
+from __future__ import absolute_import
 import os,subprocess,struct
 import logging
-from error import ScapytainException
+from .error import ScapytainException
+import six
 
 log = logging.getLogger("scapytain")
 
@@ -24,7 +26,7 @@ class ScapyProxy:
             log.info("Running %s" % cmd)
             self.peer = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         def send(self, test):
-            if type(test) is unicode:
+            if type(test) is six.text_type:
                 test = test.encode("utf-8")
             self.peer.stdin.write(struct.pack("!I", len(test)))
             self.peer.stdin.write(test)
