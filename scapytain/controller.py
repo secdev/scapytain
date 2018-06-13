@@ -39,7 +39,7 @@ log = logging.getLogger("scapytain")
 conf = config.get_config()
 
 loader = TemplateLoader(conf.templates_path, auto_reload=True)
-scapy=scapy_proxy.ScapyProxy(conf.scapyproxy_path, conf.scapy_path, conf.modules)
+scapy=scapy_proxy.ScapyProxy(conf.modules)
 
 
 class Root(object):

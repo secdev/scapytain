@@ -4,58 +4,34 @@
 ## This program is published under a GPLv2 license
 
 from __future__ import absolute_import
-import os,subprocess,struct
+import os, sys, importlib
 import logging
 from .error import ScapytainException
 import six
 
+from scapy import all as scapy
+
 log = logging.getLogger("scapytain")
 
 
-class ScapyProxy:
-    def __init__(self, scapy_proxy, scapy_path, modules):
-        cmd = scapy_proxy.split()
-        cmd += ["-s" , scapy_path]
-        for m in modules:
-            cmd += ["-e", m]
-        self.peer_cmd = cmd
-
-    class Proxy:
-        cmd = None
-        def __init__(self, cmd):
-            log.info("Running %s" % cmd)
-            self.peer = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-        def send(self, test):
-            if type(test) is six.text_type:
-                test = test.encode("utf-8")
-            self.peer.stdin.write(struct.pack("!I", len(test)))
-            self.peer.stdin.write(test)
-        def recv(self):
-            val = self.peer.stdout.read(1)
-            if not val:
-                raise ScapytainException("Something wrong with the child")
-            l, = struct.unpack("!I", self.peer.stdout.read(4))
-            res = self.peer.stdout.read(l).decode("utf8")
-            l, = struct.unpack("!I", self.peer.stdout.read(4))
-            exn = self.peer.stdout.read(l).decode("utf8")
-            return ord(val),res,exn
-        def close(self):
-            self.peer.stdin.write("\xff\xff\xff\xff")
-        def run(self, test):
-            self.send(test)
-            return self.recv()
-        def __del__(self):
-            try:
-                self.close()
-            except:
-                pass
-            
-    def get_proxy(self):
-        return self.Proxy(self.peer_cmd)
+class ScapyProxy(object):
+    def __init__(self, modules):
+        self.globals = importlib.import_module(".all", "scapy").__dict__
+        for module in modules:
+            scapy.load_contrib(module, globals_dict=self.globals)
     
-    def run(self,cmds):
-        proxy = self.get_proxy()
-        return proxy.run(cmds)
+    def run(self, cmds):
+        sys.last_value = None
+        output, res = scapy.autorun_get_html_interactive_session(cmds)
+        if res is None or res:
+            res = 1
+        elif sys.last_value is not None:
+            res = 2
+        else:
+            res = 0
+        err = sys.last_value
+        exn = "%s: %s" % (err.__class__.__name__, str(err))
+        return res, output, exn
 
     def run_tests_from_tspec(self, tests, init=None):
         return self.run_tests(tests, lambda r: r.tests[-1].code, init=init)
@@ -67,21 +43,19 @@ class ScapyProxy:
         return self.run_tests(results, lambda r: r.test.code, init=init)
 
     def run_tests(self, lst, key, init=None):
-        proxy = self.get_proxy()
         if init:
-            res_val,res,exn = proxy.run(init)
+            res_val, res, exn = self.run(init)
             if res_val != 1:
                 log.error("Init code returned %s" % ["failed", "sucess", "exception"][res_val])
-                if res_val == 2:
+                if res_val == 0:
                     log.error("Exception = [%r]" % exn)
         for x in lst:
-            yield x,proxy.run(key(x))
+            yield x, self.run(key(x))
         
 
     def run_tests_with_dependencies(self, lst, key, init=None):
-        proxy = self.get_proxy()
         if init:
-            res_val,res,exn = proxy.run(init)
+            res_val, res, exn = self.run(init)
             if res_val != 1:
                 log.error("Init code returned %s" % ["failed", "sucess", "exception"][res_val])
                 if res_val == 2:
@@ -110,11 +84,11 @@ class ScapyProxy:
             if depfailed:
                 res_val,res,exn = result = 3,"",None
             else:
-                res_val,res,exn = result = proxy.run(code)
+                res_val,res,exn = result = self.run(code)
             if tcode == tspec.tests[-1]:
                 done.append(tspec)
                 if res_val != 1:
                     failed.append(tspec)
-            yield x,result
+            yield x, result
             
         

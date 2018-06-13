@@ -22,8 +22,6 @@ class conf:
     templates_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'templates'))
     static_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'htdocs'))
     highlight_path = "highlight"
-    scapy_path = "scapy"
-    scapyproxy_path = "scapytain_scapyproxy"
     modules = []
     # server
     port = 8080
