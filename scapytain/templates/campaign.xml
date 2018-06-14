@@ -63,23 +63,28 @@
 
             <h2>Campaigns runs</h2>
 
-            <table class="list">
-                <tr>
-                    <th sortkey="reference">Reference</th>
-                    <th sortkey="name">Name</th>
-                    <th sortkey="description">Description</th>
-                    <th sortkey="nblaunched">Tests launched</th>
-                </tr>
-                <tr py:for="run in sorted(camp.campaign_runs,key=sortkey_getter, reverse=bool(rev))">
-                    <td>
-                        <a href="/campaign_run/${run.id}">${run.reference}</a>
-                    </td>
-                    <td>${run.name}</td>
-                    <td>${run.description}</td>
-                    <td class="nb">${len([None for res in run.results if res.completed])}/${len(run.results)}</td>
-                </tr>
-            </table>
-
+            <form method="POST" action="$action">
+                <input type="hidden" id="actions_runs" name="actions_runs" value="1" />
+                <table class="list">
+                    <tr>
+                        <th sortkey="reference">Reference</th>
+                        <th sortkey="name">Name</th>
+                        <th sortkey="description">Description</th>
+                        <th sortkey="nblaunched">Tests launched</th>
+                        <th>Select</th>
+                    </tr>
+                    <tr py:for="run in sorted(camp.campaign_runs, key=sortkey_getter, reverse=bool(rev))">
+                        <td>
+                            <a href="/campaign_run/${run.id}">${run.reference}</a>
+                        </td>
+                        <td>${run.name}</td>
+                        <td>${run.description}</td>
+                        <td class="nb">${sum(1 for res in run.results if res.completed)}/${len(run.results)}</td>
+                        <td><input type="checkbox" name="check_${run.id}"/></td>
+                    </tr>
+                </table>
+            <input type="submit" name="delete" value="Delete selected" />
+            </form>
 
 
             <h2>Results</h2>
@@ -90,7 +95,6 @@
                 <h4>
                     <a href="/test_plan/%{test_plan.id}">${test_plan.reference}: ${test_plan.name}</a>
                 </h4>
-
                 <table class="list">
                     <tr>
                         <th>Objective</th>
@@ -99,24 +103,17 @@
 
                     <py:for each="obj in test_plan.objectives">
                         <?python
-                          all_objr = [objr for run in camp.campaign_runs for test_planr in run.test_plan_results if test_planr.test_plan.id==test_plan.id  for objr in test_planr.objective_results if (objr.objective.id==obj.id and ([r for r in objr.results if r.completed] ))  ]
-                          objcls=""
+                          if test_plan.id not in camp_tree:
+                              all_objr = []
+                          else:
+                              all_objr = [objr for objr in camp_tree[test_plan.id][obj.id] if any(r for r in objr.results if r.completed)]
+                          objcls = ""
+                          considered_objr = None
                           if all_objr:
                               all_objr.sort(key=lambda o:max(r.date for r in o.results))
                               considered_objr = all_objr[-1]
-                              outdated = None
-                              for r in considered_objr.results:
-                          objcls=r.status.css_class
-                          if r.status.id == 6:
-                              outdated = r.status.css_class
-                          if r.status.id not in [4,6]:
-                              break
-                          else:
-                              if outdated:
-                                  objcls = outdated
-                              else:
-                                  considered_objr = None
-                        ?>
+                              objcls = get_cls(considered_objr)
+                            ?>
                         <tr>
                             <td  class="$objcls">
                                 <a href="/objective/${obj.id}">${obj.reference}</a>
@@ -125,7 +122,7 @@
                                 <td>
                                     <py:for each="r in considered_objr.results">
                                         <a class="noblock" href="/result/${r.id}">
-                                            <span class="${r.status.css_class}">${r.test.test_spec.reference}&amp;nbsp;</span>
+                                            <span class="${r.status.css_class}">${r.test.test_spec.reference}</span>
                                         </a>
                                     </py:for>
                                 </td>

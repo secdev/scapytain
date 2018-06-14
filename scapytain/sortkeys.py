@@ -32,7 +32,17 @@ class KeyMaker:
                 return list(names),lambda x:tuple( g(x) for g in getters )
         return [],self.default
         
-
+def organized_campaign_runs(camp):
+    results = {}
+    for run in camp.campaign_runs:
+        for test_planr in run.test_plan_results:
+            tp_id = test_planr.test_plan.id
+            results.setdefault(tp_id, {})
+            for objr in test_planr.objective_results:
+                obj_id = objr.objective.id
+                results[tp_id].setdefault(obj_id, [])
+                results[tp_id][obj_id].append(objr)
+    return results
 
 test_plans = KeyMaker("reference","name","description",
                       nbobj=lambda x:len(x.objectives))

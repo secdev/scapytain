@@ -41,6 +41,7 @@ conf = config.get_config()
 loader = TemplateLoader(conf.templates_path, auto_reload=True)
 scapy=scapy_proxy.ScapyProxy(conf.modules)
 
+CAMPAIGNS_CACHE = {}
 
 class Root(object):
 
@@ -562,7 +563,7 @@ class Root(object):
                     else:
                         test_mean.set(**valid_data)
     
-                    if image is not None:
+                    if image is not None and image.file is not None:
                         test_mean.set(image=image.file.read(), image_mime=image.type)
                     return test_mean
                 test_mean = DO_TXN(txn,test_mean)
@@ -578,15 +579,57 @@ class Root(object):
 
 
     @cherrypy.expose
-    def campaign(self, camp_id=None, sortkey=None, rev=False):
+    def campaign(self, camp_id=None, sortkey=None, rev=False, **post_data):
         if camp_id is None:
             sortkey,sortkey_getter=sortkeys.campaigns.getter(sortkey)
             stream = loader.load('campaigns.xml').generate(campaigns=Campaign.select(),
                                                            sortkey=sortkey,rev=rev,sortkey_getter=sortkey_getter)
         else:
             camp = validate.CampaignId().to_python(camp_id)
+            if cherrypy.request.method == 'POST':
+                if post_data.get("quick_run", False):
+                    try:
+                        self.edit_run(camp_id=camp_id, name=camp.name,
+                                      test_mean=None,
+                                      description=camp.description,
+                                      reference=None,
+                                      context="")
+                    except cherrypy.HTTPRedirect as e:
+                        raise cherrypy.HTTPRedirect("/launch_run/%s" % e.urls[0].split("/")[-1])
+                elif post_data.get("actions_runs", False):
+                    selected = []
+                    for run in camp.campaign_runs:
+                        if post_data.get("check_%s" % run.id, False):
+                            selected.append(run)
+                    if post_data.get("delete", False):
+                        def txn():
+                            for cr in selected:
+                                for tpr in cr.test_plan_results:
+                                    for ors in tpr.objective_results:
+                                        ors.destroySelf()
+                                    tpr.destroySelf()
+                                for r in cr.results:
+                                    r.destroySelf()
+                                cr.destroySelf()
+                            if camp_id in CAMPAIGNS_CACHE:
+                                del CAMPAIGNS_CACHE[camp_id]
+                        DO_TXN(txn)
+            action = "/campaign/%s" % camp_id
             sortkey,sortkey_getter=sortkeys.campaign_runs.getter(sortkey)
-            stream = loader.load('campaign.xml').generate(camp=camp,sortkey=sortkey,rev=rev,sortkey_getter=sortkey_getter)
+            def get_cls(objr):
+                try:
+                    return next(r.status.css_class for r in objr.results if r.status.id not in [4, 6])
+                except StopIteration:
+                    return objr.results[0].status.css_class
+            if not camp_id in CAMPAIGNS_CACHE:
+                CAMPAIGNS_CACHE[camp_id] = sortkeys.organized_campaign_runs(camp)
+            stream = loader.load('campaign.xml').generate(action=action,
+                                                          camp=camp,
+                                                          camp_tree=CAMPAIGNS_CACHE[camp_id],
+                                                          sortkey=sortkey,
+                                                          rev=rev,
+                                                          sortkey_getter=sortkey_getter,
+                                                          get_cls=get_cls)
         return stream.render('html', doctype='html')
 
     @cherrypy.expose
@@ -661,6 +704,11 @@ class Root(object):
             data["reference"] = camp.reference+"-run%02i" % len(list(camp.campaign_runs))
             if camp.test_mean:
                 data["test_mean"] = camp.test_mean.id
+            # Get them to post data if missing
+            if "test_mean" in post_data and post_data["test_mean"] is None:
+                post_data["test_mean"] = data["test_mean"]
+            if "reference" in post_data and post_data["reference"] is None:
+                post_data["reference"] = data["reference"]
         elif run_id is not None:
             run = validate.CampaignRunId().to_python(run_id)
             data = run.sqlmeta.asDict()

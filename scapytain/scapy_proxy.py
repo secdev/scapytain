@@ -18,7 +18,16 @@ class ScapyProxy(object):
     def __init__(self, modules):
         self.globals = importlib.import_module(".all", "scapy").__dict__
         for module in modules:
-            scapy.load_contrib(module, globals_dict=self.globals)
+            output, res = scapy.load_contrib(module, globals_dict=self.globals)
+            if not (res is None or res):
+                print(output)
+        self.pre_run()
+
+    def pre_run(self):
+        if scapy.consts.WINDOWS:
+            if not scapy.pcap_service_status()[2]:
+                scapy.pcap_service_start()
+            scapy.route_add_loopback()
     
     def run(self, cmds):
         sys.last_value = None
