@@ -59,7 +59,7 @@ td a:hover, td a:focus, td a:active, tr a:hover, tr a:focus, tr a:active {
 }
 
 td a.noblock { 
-        display: inherit;
+        display: inline-block;
 }
 
 a img, a:hover img, a:focus img, a:active img {border: 0px; border-style: solid}
@@ -265,6 +265,7 @@ table.list td {
         padding-left: 10px;
         padding-right: 10px;
 	border:solid #6666ff 1px;
+    overflow-x:auto;
 }
 
 table.list pre.code { 
