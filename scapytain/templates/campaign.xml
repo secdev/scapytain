@@ -1,117 +1,143 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:xi="http://www.w3.org/2001/XInclude"
       xmlns:py="http://genshi.edgewall.org/">
-  
-<xi:include href="layout.xml" />
 
-  <head>
-    <title>Campaign ${camp.reference}</title>
-  </head>
+    <xi:include href="layout.xml" />
+
+    <head>
+        <title>Campaign ${camp.reference}</title>
+    </head>
 
 
-  <body py:with="baseurl='/campaign/%i' % camp.id">
-    
-    <menu campaign="${camp.id}"/>
+    <body py:with="baseurl='/campaign/%i' % camp.id">
 
-    <bigtitle title="Campaign description" />
-    <div class="navbar"><a href="/">Home</a> &gt; 
-                        <a href="/campaign/">Campaigns</a> &gt;
-                        <a href="/campaign/${camp.id}">${camp.reference}</a> &gt;
-    </div>
-    
-    <div class="content">
-	
-	
-      <h1>${camp.reference}: ${camp.name}</h1>
-      
-      <h2 py:if="camp.test_mean">Default test mean: <a href="/test_mean/${camp.test_mean.id}">${camp.test_mean.reference}: ${camp.test_mean.name}</a></h2>
+        <menu campaign="${camp.id}"/>
 
-      <h2>Test Plan</h2>
-      
-      <table class="list">
-	<tr><th>Reference</th><th>Name</th><th>Description</th><th>#objectives</th></tr>
-	<tr py:for="test_plan in camp.test_plans">
-	  <td><a href="/test_plan/${test_plan.id}">${test_plan.reference}</a></td>
-	  <td>${test_plan.name}</td>
-	  <td>${test_plan.description}</td>
-	  <td>${len(list(test_plan.objectives))}</td>
-	</tr>
-      </table>
-	
-      
+        <bigtitle title="Campaign description" />
+        <div class="navbar">
+            <a href="/">Home</a> &gt; 
+            <a href="/campaign/">Campaigns</a> &gt;
+            <a href="/campaign/${camp.id}">${camp.reference}</a> &gt;
+        </div>
 
-      <h2>Description</h2>
-      <p>
+        <div class="content">
+
+
+            <h1>${camp.reference}: ${camp.name}</h1>
+
+            <form method="POST" action="$action">
+                <input type="hidden" id="quick_run" name="quick_run" value="1" />
+                <input type="submit" value="Quick run" />
+            </form>
+
+            <h2 py:if="camp.test_mean">Default test mean: <a href="/test_mean/${camp.test_mean.id}">${camp.test_mean.reference}: ${camp.test_mean.name}</a>
+            </h2>
+
+            <h2>Test Plan</h2>
+
+            <table class="list">
+                <tr>
+                    <th>Reference</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>#objectives</th>
+                </tr>
+                <tr py:for="test_plan in camp.test_plans">
+                    <td>
+                        <a href="/test_plan/${test_plan.id}">${test_plan.reference}</a>
+                    </td>
+                    <td>${test_plan.name}</td>
+                    <td>${test_plan.description}</td>
+                    <td>${len(list(test_plan.objectives))}</td>
+                </tr>
+            </table>
+
+
+
+            <h2>Description</h2>
+            <p>
 	${camp.description}
-      </p>
+            </p>
 
 
-      
-      <h2>Campaigns runs</h2>
 
-      <table class="list">
-	<tr>
-	  <th sortkey="reference">Reference</th>
-	  <th sortkey="name">Name</th>
-	  <th sortkey="description">Description</th>
-	  <th sortkey="nblaunched">Tests launched</th>
-	</tr>
-	<tr py:for="run in sorted(camp.campaign_runs,key=sortkey_getter, reverse=bool(rev))">
-	  <td><a href="/campaign_run/${run.id}">${run.reference}</a></td>
-	  <td>${run.name}</td>
-	  <td>${run.description}</td>
-	  <td class="nb">${len([None for res in run.results if res.completed])}/${len(run.results)}</td>
-	</tr>
-      </table>
-	
+            <h2>Campaigns runs</h2>
 
-
-      <h2>Results</h2>
-
-      <h3>Latest results</h3>
-
-      <py:for each="test_plan in camp.test_plans">
-	<h4><a href="/test_plan/%{test_plan.id}">${test_plan.reference}: ${test_plan.name}</a></h4>
-
-	<table class="list">
-	  <tr><th>Objective</th><th>Result</th></tr>
-	  
-	  <py:for each="obj in test_plan.objectives">
-	      <?python
-	      all_objr = [objr for run in camp.campaign_runs for test_planr in run.test_plan_results if test_planr.test_plan.id==test_plan.id  for objr in test_planr.objective_results if (objr.objective.id==obj.id and ([r for r in objr.results if r.completed] ))  ]
-	      objcls=""
-              if all_objr:
-                  all_objr.sort(key=lambda o:max(r.date for r in o.results))
-                  considered_objr = all_objr[-1]
-                  outdated = None
-                  for r in considered_objr.results:
-		      objcls=r.status.css_class
-                      if r.status.id == 6:
-                          outdated = r.status.css_class
-                      if r.status.id not in [4,6]:
-                          break
-                  else:
-                      if outdated:
-                          objcls = outdated
-              else:
-                  considered_objr = None
-              ?> 
-	      <tr>
-		<td  class="$objcls"><a href="/objective/${obj.id}">${obj.reference}</a></td>
-		<py:if test="considered_objr">
-		  <td> <py:for each="r in considered_objr.results">
-			  <a class="noblock" href="/result/${r.id}"><span class="${r.status.css_class}">${r.test.test_spec.reference}&nbsp;</span></a>
-</py:for>
-		  </td>
-		    </py:if>
-		</tr>
-	  </py:for>
-	</table>
-      </py:for>
-	
+            <table class="list">
+                <tr>
+                    <th sortkey="reference">Reference</th>
+                    <th sortkey="name">Name</th>
+                    <th sortkey="description">Description</th>
+                    <th sortkey="nblaunched">Tests launched</th>
+                </tr>
+                <tr py:for="run in sorted(camp.campaign_runs,key=sortkey_getter, reverse=bool(rev))">
+                    <td>
+                        <a href="/campaign_run/${run.id}">${run.reference}</a>
+                    </td>
+                    <td>${run.name}</td>
+                    <td>${run.description}</td>
+                    <td class="nb">${len([None for res in run.results if res.completed])}/${len(run.results)}</td>
+                </tr>
+            </table>
 
 
-    </div>
-  </body>
+
+            <h2>Results</h2>
+
+            <h3>Latest results</h3>
+
+            <py:for each="test_plan in camp.test_plans">
+                <h4>
+                    <a href="/test_plan/%{test_plan.id}">${test_plan.reference}: ${test_plan.name}</a>
+                </h4>
+
+                <table class="list">
+                    <tr>
+                        <th>Objective</th>
+                        <th>Result</th>
+                    </tr>
+
+                    <py:for each="obj in test_plan.objectives">
+                        <?python
+                          all_objr = [objr for run in camp.campaign_runs for test_planr in run.test_plan_results if test_planr.test_plan.id==test_plan.id  for objr in test_planr.objective_results if (objr.objective.id==obj.id and ([r for r in objr.results if r.completed] ))  ]
+                          objcls=""
+                          if all_objr:
+                              all_objr.sort(key=lambda o:max(r.date for r in o.results))
+                              considered_objr = all_objr[-1]
+                              outdated = None
+                              for r in considered_objr.results:
+                          objcls=r.status.css_class
+                          if r.status.id == 6:
+                              outdated = r.status.css_class
+                          if r.status.id not in [4,6]:
+                              break
+                          else:
+                              if outdated:
+                                  objcls = outdated
+                              else:
+                                  considered_objr = None
+                        ?>
+                        <tr>
+                            <td  class="$objcls">
+                                <a href="/objective/${obj.id}">${obj.reference}</a>
+                            </td>
+                            <py:if test="considered_objr">
+                                <td>
+                                    <py:for each="r in considered_objr.results">
+                                        <a class="noblock" href="/result/${r.id}">
+                                            <span class="${r.status.css_class}">${r.test.test_spec.reference}&amp;nbsp;</span>
+                                        </a>
+                                    </py:for>
+                                </td>
+                            </py:if>
+                        </tr>
+                    </py:for>
+                </table>
+            </py:for>
+
+
+
+        </div>
+    </body>
 </html>
 

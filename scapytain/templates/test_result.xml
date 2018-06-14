@@ -1,76 +1,80 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:xi="http://www.w3.org/2001/XInclude"
       xmlns:py="http://genshi.edgewall.org/">
-  
-<xi:include href="layout.xml" />
 
-  <head>
-    <title>Test Result for ${tspec.reference}</title>
-  </head>
+    <xi:include href="layout.xml" />
 
-  <body>
-    
-    <menu tspec="${tspec.id}" />
+    <head>
+        <title>Test Result for ${tspec.reference}</title>
+    </head>
 
-    <bigtitle title="Test result" />
+    <body>
 
-    <div class="navbar">
-      <a href="/">Home</a> &gt; 
-      <a href="/test/">Tests</a> &gt;
-      <a href="/test/${tspec.id}">${tspec.reference}</a> &gt;
-      <a href="/run_test/${tspec.id}/${tcode.version}">Result of ${tspec.reference} v${tcode.version}/${len(list(tspec.tests))}</a> &gt;
-    </div>
-    
-    <div class="content">
-	
-	
-      <h1>${tspec.reference}: ${tspec.name}</h1>
+        <menu tspec="${tspec.id}" />
 
-      <h2>Test description</h2>
-      <p>
+        <bigtitle title="Test result" />
+
+        <div class="navbar">
+            <a href="/">Home</a> &gt; 
+            <a href="/test/">Tests</a> &gt;
+            <a href="/test/${tspec.id}">${tspec.reference}</a> &gt;
+            <a href="/run_test/${tspec.id}/${tcode.version}">Result of ${tspec.reference} v${tcode.version}/${len(list(tspec.tests))}</a> &gt;
+        </div>
+
+        <div class="content">
+
+
+            <h1>${tspec.reference}: ${tspec.name}</h1>
+
+            <h2>Test description</h2>
+            <p>
 	${tspec.description}
-      </p>
-      <h2>Expected result</h2>
-      <p>
+            </p>
+            <h2>Expected result</h2>
+            <p>
 	${tspec.expected_result}
-      </p>
+            </p>
 
-      <h2>Test implementation, version ${tcode.version}/${len(list(tspec.tests))}</h2>
+            <h2>Test implementation, version ${tcode.version}/${len(list(tspec.tests))}</h2>
 
 	${Markup(hl_test)}
-	
 
-	
 
-	<h1>Test status: <span class="${status.css_class}">${status.status}</span></h1>
 
-	<py:if test="status.id==2">
-	  <h2>Test stopped :</h2>
-	  <pre class="code">${exn}</pre>
-	</py:if>
 
-	<pre class="code" py:if="result">${Markup(result)}</pre>
+            <h1>Test status: <span class="${status.css_class}">${status.status}</span>
+            </h1>
 
-	<py:if test="not_done">
-	  <h1>Skipped Dependency tests</h1>
+            <py:if test="status.id==2">
+                <h2>Test stopped :</h2>
+                <pre class="code">${exn}</pre>
+            </py:if>
 
-	  <py:for each="nd in not_done">
-	    <h2><a href="/test/${nd.test_spec.id}">${nd.test_spec.reference}: ${nd.test_spec.name}</a> v${nd.version}</h2>
-	  </py:for>
-	</py:if>
+            <pre class="code" py:if="result">${Markup(result)}</pre>
 
-	<py:if test="results">
-	  
-	  <h1>Dependency tests</h1>
+            <py:if test="not_done">
+                <h1>Skipped Dependency tests</h1>
 
-	  <py:for each="t,st,res in results">
-	    <h2><a href="/test/${t.test_spec.id}">${t.test_spec.reference}: ${t.test_spec.name}</a> v${t.version}: <span class="${st.css_class}">${st.status}</span></h2>
-	    
-	    <pre class="code">${Markup(res)}</pre>
-	  </py:for>
-	</py:if>
+                <py:for each="nd in not_done">
+                    <h2>
+                        <a href="/test/${nd.test_spec.id}">${nd.test_spec.reference}: ${nd.test_spec.name}</a> v${nd.version}</h2>
+                </py:for>
+            </py:if>
 
-    </div>
-  </body>
+            <py:if test="results">
+
+                <h1>Dependency tests</h1>
+
+                <py:for each="t,st,res in results">
+                    <h2>
+                        <a href="/test/${t.test_spec.id}">${t.test_spec.reference}: ${t.test_spec.name}</a> v${t.version}: <span class="${st.css_class}">${st.status}</span>
+                    </h2>
+
+                    <pre class="code">${Markup(res)}</pre>
+                </py:for>
+            </py:if>
+
+        </div>
+    </body>
 </html>
 

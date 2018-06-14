@@ -1,42 +1,44 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:xi="http://www.w3.org/2001/XInclude"
       xmlns:py="http://genshi.edgewall.org/">
-  
-<xi:include href="layout.xml" />
 
-  <head>
-    <title>All campaigns</title>
-  </head>
+    <xi:include href="layout.xml" />
+
+    <head>
+        <title>All campaigns</title>
+    </head>
 
 
-  <body py:with="baseurl='/campaign'">
-    
-    <menu />
-    <bigtitle title="All campaign"/>
-    <div class="navbar">
-      <a href="/">Home</a> &gt;
-      <a href="/campaign">Campaigns</a> &gt;
-    </div>
-    
-    <div class="content">
-    
-      <h1>Available campaigns</h1>
-	
-      <table class="list">
-       <tr>
-	 <th sortkey="reference">Reference</th>
-	 <th sortkey="name">Name</th>
-	 <th sortkey="description">Description</th>
-	 <th sortkey="nbtp">Number of test plans</th>
-       </tr>
-	<tr py:for="c in sorted(campaigns, key=sortkey_getter,reverse=bool(rev))">
-         <td><a href="/campaign/${c.id}">${c.reference}</a></td>
-         <td>${c.name}</td>
-         <td>${c.description}</td>
-         <td>${len(list(c.test_plans))}</td>
-	</tr>
-      </table>
-    </div>
-  </body>
+    <body py:with="baseurl='/campaign'">
+
+        <menu />
+        <bigtitle title="All campaign"/>
+        <div class="navbar">
+            <a href="/">Home</a> &gt;
+            <a href="/campaign">Campaigns</a> &gt;
+        </div>
+
+        <div class="content">
+
+            <h1>Available campaigns</h1>
+
+            <table class="list">
+                <tr>
+                    <th sortkey="reference">Reference</th>
+                    <th sortkey="name">Name</th>
+                    <th sortkey="description">Description</th>
+                    <th sortkey="nbtp">Number of test plans</th>
+                </tr>
+                <tr py:for="c in sorted(campaigns, key=sortkey_getter,reverse=bool(rev))">
+                    <td>
+                        <a href="/campaign/${c.id}">${c.reference}</a>
+                    </td>
+                    <td>${c.name}</td>
+                    <td>${c.description}</td>
+                    <td>${len(list(c.test_plans))}</td>
+                </tr>
+            </table>
+        </div>
+    </body>
 </html>
 

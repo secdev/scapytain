@@ -2,95 +2,107 @@
       xmlns:xi="http://www.w3.org/2001/XInclude"      
       xmlns:py="http://genshi.edgewall.org/">
 
-<xi:include href="layout.xml" />
+    <xi:include href="layout.xml" />
 
 
-  <head>
-    <title>Edit a test code</title>
-  </head>
+    <head>
+        <title>Edit a test code</title>
+    </head>
 
-  <body>
-    
-    <menu tspec="${tspec.id}" />
+    <body>
 
-    <bigtitle title="Test description" />
-    <div class="navbar">
-      <a href="/">Home</a> &gt; 
-      <a href="/test/">Tests</a> &gt; 
-      <a href="/test/${tspec.id}">Test ${tspec.reference}</a> &gt; 
-    </div>
-    
-    <div class="content">
-      
-      <py:if test="status">
-        <h1 >Execution status:  <span class="${status.css_class}">${status.status}</span></h1>
+        <menu tspec="${tspec.id}" />
 
-	<py:if test="status.id==2">
-	  <h2>Test stopped :</h2>
-	  <pre class="code">${exn}</pre>
-	</py:if>
+        <bigtitle title="Test description" />
+        <div class="navbar">
+            <a href="/">Home</a> &gt; 
+            <a href="/test/">Tests</a> &gt; 
+            <a href="/test/${tspec.id}">Test ${tspec.reference}</a> &gt; 
+        </div>
 
-	<pre class="code" py:if="result">${Markup(result)}</pre>
-      </py:if>
+        <div class="content">
 
-      <h1>Enter your test description</h1>
+            <py:if test="status">
+                <h1 >Execution status:  <span class="${status.css_class}">${status.status}</span>
+                </h1>
 
-      <p class="error" py:if="type(errors) is unicode">${errors}</p>
+                <py:if test="status.id==2">
+                    <h2>Test stopped :</h2>
+                    <pre class="code">${exn}</pre>
+                </py:if>
 
-      <form method="POST" action="/edit_test_code/${tspec.id}/${tcode.version}">
-	<table>
-	  <tr>
-	    <th><label for="code">Test code:</label></th>
-	    <td></td>
-	    <td class="error" py:if="'code' in errors">${errors.code}</td>
-	  </tr>
-	  <tr>
-	    <td colspan="2"><textarea class="code" id="code" name="code" rows="25" cols="80" /></td>
-	  </tr>
+                <pre class="code" py:if="result">${Markup(result)}</pre>
+            </py:if>
 
-	  <tr>
-	    <th><label for="comment">Comment on code:</label></th>
-	    <td></td>
-	    <td class="error" py:if="'comment' in errors">${errors.comment}</td>
-	  </tr>
-	  <tr>
-	    <td colspan="2"><textarea id="comment" name="comment" rows="2" cols="80" /></td>
-	  </tr>
+            <h1>Enter your test description</h1>
 
-	</table>
+            <p class="error" py:if="type(errors) is unicode">${errors}</p>
 
-	<select size="1" id="tmean_id" name="tmean_id" title="test_mean">
-	  <option value="none">-- NO TEST MEAN --</option>
-	  <option py:for="tm in test_means" value="${tm.id}" py:with="text='%s: %s'%(tm.reference,tm.name)">$text</option>
-	</select>	
-	<input type="submit" name="tryit" value="Try it!" />
-	<input type="submit" name="submit" value="Submit!" />
-      </form>
+            <form method="POST" action="/edit_test_code/${tspec.id}/${tcode.version}">
+                <table>
+                    <tr>
+                        <th>
+                            <label for="code">Test code:</label>
+                        </th>
+                        <td/>
+                        <td class="error" py:if="'code' in errors">${errors.code}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <textarea class="code" id="code" name="code" rows="25" cols="80" />
+                        </td>
+                    </tr>
 
-    </div>
+                    <tr>
+                        <th>
+                            <label for="comment">Comment on code:</label>
+                        </th>
+                        <td/>
+                        <td class="error" py:if="'comment' in errors">${errors.comment}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <textarea id="comment" name="comment" rows="2" cols="80" />
+                        </td>
+                    </tr>
+
+                </table>
+
+                <select size="1" id="tmean_id" name="tmean_id" title="test_mean">
+                    <option value="none">-- NO TEST MEAN --</option>
+                    <option py:for="tm in test_means" value="${tm.id}" py:with="text='%s: %s'%(tm.reference,tm.name)">$text</option>
+                </select>	
+                <input type="submit" name="tryit" value="Try it!" />
+                <input type="submit" name="submit" value="Submit!" />
+            </form>
+
+        </div>
 
 
 
-    <py:if test="not_done">
-      <h1>Skipped Dependency tests</h1>
-      
-      <py:for each="nd in not_done">
-	<h2><a href="/test/${nd.test_spec.id}">${nd.test_spec.reference}: ${nd.test_spec.name}</a> v${nd.version}</h2>
-      </py:for>
-    </py:if>
-    
-    <py:if test="results">
-      
-      <h1>Dependency tests</h1>
-      
-      <py:for each="t,st,res in results">
-	<h2><a href="/test/${t.test_spec.id}">${t.test_spec.reference}: ${t.test_spec.name}</a> v${t.version}: <span class="${st.css_class}">${st.status}</span></h2>
-	
-	<pre class="code">${Markup(res)}</pre>
-      </py:for>
-    </py:if>
-    
+        <py:if test="not_done">
+            <h1>Skipped Dependency tests</h1>
 
-  </body>
+            <py:for each="nd in not_done">
+                <h2>
+                    <a href="/test/${nd.test_spec.id}">${nd.test_spec.reference}: ${nd.test_spec.name}</a> v${nd.version}</h2>
+            </py:for>
+        </py:if>
+
+        <py:if test="results">
+
+            <h1>Dependency tests</h1>
+
+            <py:for each="t,st,res in results">
+                <h2>
+                    <a href="/test/${t.test_spec.id}">${t.test_spec.reference}: ${t.test_spec.name}</a> v${t.version}: <span class="${st.css_class}">${st.status}</span>
+                </h2>
+
+                <pre class="code">${Markup(res)}</pre>
+            </py:for>
+        </py:if>
+
+
+    </body>
 </html>
 

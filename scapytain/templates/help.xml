@@ -1,74 +1,75 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:xi="http://www.w3.org/2001/XInclude"
       xmlns:py="http://genshi.edgewall.org/">
-  
-<xi:include href="layout.xml" />
 
-  <head>
-    <title>Help</title>
-  </head>
+    <xi:include href="layout.xml" />
+
+    <head>
+        <title>Help</title>
+    </head>
 
 
-  <body>
-    
-    <menu />
+    <body>
 
-    <bigtitle title="Help" />
-    <div class="navbar"><a href="/">Home</a> &gt; 
-                        <a href="/help">Help</a> &gt;
-    </div>
-    
-    <div class="content">
-	
-      <h1>Help on Scapytain</h1>
+        <menu />
 
-      <h2>What is Scapytain</h2>
+        <bigtitle title="Help" />
+        <div class="navbar">
+            <a href="/">Home</a> &gt; 
+            <a href="/help">Help</a> &gt;
+        </div>
 
-      <p>
+        <div class="content">
+
+            <h1>Help on Scapytain</h1>
+
+            <h2>What is Scapytain</h2>
+
+            <p>
 	Scapytain is a web application that
 	can help to manage test campaigns using Scapy snippets.
-      </p>
+            </p>
 
-      <h2>Scapytain framework</h2>
+            <h2>Scapytain framework</h2>
 
-      <p>
+            <p>
         Scapytain offers 4 spaces: tests, test plans, test means and campaigns .
-      </p>
-      <h3>Tests</h3>
-      
-      <p>
+            </p>
+            <h3>Tests</h3>
+
+            <p>
 	The test space holds tests, organized by test groups.
 	Each version of the test code is remembered.
 	Tests may have dependencies on other tests.
-      </p>
-	
-      <h3>Test Plans</h3>
-      
-      <p>
-	Each test plan is a collection of objectives, grouped by sections. 
-      </p>
-      
-      <h3>Test means</h3>
+            </p>
 
-      <p>
+            <h3>Test Plans</h3>
+
+            <p>
+	Each test plan is a collection of objectives, grouped by sections. 
+            </p>
+
+            <h3>Test means</h3>
+
+            <p>
 	A test mean is a description of a set of physical resources, associated with some initialization code.
 	This can be used if, for intance, an equipment is present with IP 10.0.0.30 on a bench and 172.16.1.30 on another,
 	to create tests independant from this and use the value provided by the test mean initialization code.
-      </p>
+            </p>
 
 
-      <h3>Campaigns</h3>
+            <h3>Campaigns</h3>
 
-      <p>
+            <p>
 	A campaign gathers a set of test plans. A campaign is launched by creating a campaign run. A campaign run
 	contains all the tests needed to check their objectives, plus dependency tests.
 	A campaign can have a default test mean. Each campaign run can change this default.
-      </p>
+            </p>
 
-      <center>
-	<img src="/images/big_picture.png" />
-      </center>
-    </div>
-  </body>
+            <center>
+                <img src="/images/big_picture.png" />
+            </center>
+        </div>
+    </body>
 </html>
 
