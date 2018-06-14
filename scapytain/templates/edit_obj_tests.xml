@@ -2,69 +2,71 @@
       xmlns:xi="http://www.w3.org/2001/XInclude"      
       xmlns:py="http://genshi.edgewall.org/">
 
-<xi:include href="layout.xml" />
+    <xi:include href="layout.xml" />
 
 
-  <head>
-    <title>Edit ${obj.reference} tests</title>
-  </head>
+    <head>
+        <title>Edit ${obj.reference} tests</title>
+    </head>
 
 
-  <body py:with="test_plan=obj.test_plan">
-    
-    <menu objective="${obj.id}" />
-    <bigtitle title="Objective tests" />
-    <div class="navbar">
-      <a href="/">Home</a> &gt; 
-      <a href="/test_plan">Test Plans</a> &gt; 
-      <a href="/test_plan/${test_plan.id}">${test_plan.reference}</a> &gt;
-      <a href="/objective/${obj.id}">${obj.reference}</a> &gt;
-    </div>
+    <body py:with="test_plan=obj.test_plan">
 
-    <div class="content">
-	
-      <h1>Select objective tests</h1>
+        <menu objective="${obj.id}" />
+        <bigtitle title="Objective tests" />
+        <div class="navbar">
+            <a href="/">Home</a> &gt; 
+            <a href="/test_plan">Test Plans</a> &gt; 
+            <a href="/test_plan/${test_plan.id}">${test_plan.reference}</a> &gt;
+            <a href="/objective/${obj.id}">${obj.reference}</a> &gt;
+        </div>
 
-      <py:if test="upgraded_tests">
-	<h2>Warning:</h2>
-	<p>
+        <div class="content">
+
+            <h1>Select objective tests</h1>
+
+            <py:if test="upgraded_tests">
+                <h2>Warning:</h2>
+                <p>
 	  Following tests have newer versions
-	</p>
-	<ul>
-	  <py:for each="tcode in obj.tests">
-	    <py:with vars="tspec=tcode.test_spec; latest_tcode=tspec.tests[-1]">
-	      <li py:if="tcode != latest_tcode">
+                </p>
+                <ul>
+                    <py:for each="tcode in obj.tests">
+                        <py:with vars="tspec=tcode.test_spec; latest_tcode=tspec.tests[-1]">
+                            <li py:if="tcode != latest_tcode">
 		$tspec.reference ($tspec.name) from version $tcode.version to $latest_tcode.version
-	      </li>
-	    </py:with>
-	  </py:for>
-	</ul>
-      </py:if>
+                            </li>
+                        </py:with>
+                    </py:for>
+                </ul>
+            </py:if>
 
-      <form method="POST" action="/edit_obj_tests/${obj.id}">
-	<table>
+            <form method="POST" action="/edit_obj_tests/${obj.id}">
+                <table>
 
-	  <tr>
-	    <th><label for="tcodes_list">Tests</label></th>
-	    <td> 
-	      <select multiple="multiple" size="${len(list(tcodes_list))}" id="tcodes" name="tcodes" title="tcodes">
+                    <tr>
+                        <th>
+                            <label for="tcodes_list">Tests</label>
+                        </th>
+                        <td> 
+                            <select multiple="multiple" size="${len(list(tcodes_list))}" id="tcodes" name="tcodes" title="tcodes">
 
-		<py:for each="v,t in tcodes_list">
-		  <py:with vars="text=('%s: %s' % (t.test_spec.reference, t.test_spec.name))+['',' VERSION %i'%t.version][v]">
-		    <option value="${t.id}">${text}</option>
-		  </py:with>
-		</py:for>
+                                <py:for each="v,t in tcodes_list">
+                                    <py:with vars="text=('%s: %s' % (t.test_spec.reference, t.test_spec.name))+['',' VERSION %i'%t.version][v]">
+                                        <option value="${t.id}">${text}</option>
+                                    </py:with>
+                                </py:for>
 
-	      </select>
-	    </td>
-	    <td py:if="'tcodes' in errors">${errors.tcodes}</td>
-	  </tr>
-	</table>
-	<input type="submit" value="Go!" />
-      </form>
+                            </select>
+                        </td>
+                        <td py:if="'tcodes' in errors">${errors.tcodes}</td>
+                    </tr>
+                </table>
+                <input type="submit" value="Go!" />
+            </form>
 
-    </div>
+        </div>
 
-  </body>
+    </body>
 </html>
 

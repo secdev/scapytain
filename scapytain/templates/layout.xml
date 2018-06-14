@@ -2,106 +2,287 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:py="http://genshi.edgewall.org/" py:strip="">
 
-  <py:match path="head" once="true">
-    <head py:attrs="select('@*')">
-      <title py:with="title = list(select('title/text()'))">
+    <py:match path="head" once="true">
+        <head py:attrs="select('@*')">
+            <title py:with="title = list(select('title/text()'))">
         Scapytain<py:if test="title">: ${title}</py:if>
-      </title>
-      <link rel="stylesheet" href="/static/scapytain.css" type="text/css" />
-      <link rel="icon" type="image/png" href="/images/favicon.png" />
-      <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+            </title>
+            <link rel="stylesheet" href="/static/scapytain.css" type="text/css" />
+            <link rel="icon" type="image/png" href="/images/favicon.png" />
+            <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
       ${select('*[local-name()!="title"]')}
-    </head>
-  </py:match>
+        </head>
+    </py:match>
 
-  <py:match path="body" once="true">
-    <body py:attrs="select('@*')">
+    <py:match path="body" once="true">
+        <body py:attrs="select('@*')">
       ${select('menu')}
 
-      <div class="main">
-	
+            <div class="main">
+
 	${select('*[local-name()!="menu"]')}
 
-	<!--!      ${select('*|text()')}-->
-	<div class="footer">
-	  <a href="http://www.secdev.org/projects/scapytain">
-	    <img src="/images/scapytain_logo.png"  height="15" border="0" alt="" />
+                <!--!      ${select('*|text()')}-->
+                <div class="footer">
+                    <a href="http://www.secdev.org/projects/scapytain">
+                        <img src="/images/scapytain_logo.png"  height="15" border="0" alt="" />
 	    Scapytain
-	  </a>
-	</div>
-      </div>
-    </body>
-  </py:match>
+                    </a>
+                </div>
+            </div>
+        </body>
+    </py:match>
 
 
-  <py:match path="bigtitle" once="true">
-    <div class="bigtitle" py:with="title=str(select('@title')) or title">
+    <py:match path="bigtitle" once="true">
+        <div class="bigtitle" py:with="title=str(select('@title')) or title">
       $title
-    </div>
-  </py:match>
+        </div>
+    </py:match>
 
-  <py:match path="menu" once="true">
-    <div class="menu">
-      <a href="/"><img src="/images/scapytain_logo.png"  border="0" alt="[Scapytain]" /></a><br/>
-      <br/>
-      <table>
-	<tr><td><a href="/help">Help</a></td></tr>
-	<tr><td><a href="/test_plan">Test Plans</a></td></tr>
-	<tr><td>  <a href="/edit_test_plan"><span class="block">+ add a test plan</span></a> </td></tr>
-	<tr><td><a href="/test">Tests</a></td></tr>
-	<tr><td>  <a href="/edit_test"><span class="block">+ add a test</span></a> </td></tr>
-	<tr><td><a href="/test_mean">Test means</a></td></tr>
-	<tr><td>  <a href="/edit_test_mean"><span class="block">+ add a test mean</span></a> </td></tr>
-	<tr><td><a href="/campaign">Campaigns</a></td></tr>
-	<tr><td>  <a href="/edit_campaign"><span class="block">+ add a campaign</span></a> </td></tr>
+    <py:match path="menu" once="true">
+        <div class="menu">
+            <a href="/">
+                <img src="/images/scapytain_logo.png"  border="0" alt="[Scapytain]" />
+            </a>
+            <br/>
+            <br/>
+            <table>
+                <tr>
+                    <td>
+                        <a href="/help">Help</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="/test_plan">Test Plans</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="/edit_test_plan">
+                            <span class="block">+ add a test plan</span>
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="/test">Tests</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="/edit_test">
+                            <span class="block">+ add a test</span>
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="/test_mean">Test means</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="/edit_test_mean">
+                            <span class="block">+ add a test mean</span>
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="/campaign">Campaigns</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="/edit_campaign">
+                            <span class="block">+ add a campaign</span>
+                        </a>
+                    </td>
+                </tr>
 
-	<py:if test="str(select('@test_plan'))">
-	  <tr><td><a href="/test_plan/${test_plan.id}">${test_plan.reference}</a></td></tr>
-	  <tr><td>  <a href="/test_plan/${test_plan.id}?extended_view=1"><span class="block">+ extended view</span></a> </td></tr>
-	  <tr><td>  <a href="/edit_test_plan/${test_plan.id}"><span class="block">+ edit test plan</span></a> </td></tr>
-	  <tr><td>  <a href="/delete_test_plan/${test_plan.id}"><span class="block">+ delete test plan</span></a> </td></tr>
-	  <tr><td>  <a href="/upgrade_tests/${test_plan.id}"><span class="block">+ upgrade tests</span></a> </td></tr>
-	  <tr><td>  <a href="/edit_sections/${test_plan.id}"><span class="block">+ manage sections</span></a> </td></tr>
-	  <tr><td>  <a href="/edit_objective/0/${test_plan.id}"><span class="block">+ add an objective</span></a> </td></tr>
-	</py:if>
+                <py:if test="str(select('@test_plan'))">
+                    <tr>
+                        <td>
+                            <a href="/test_plan/${test_plan.id}">${test_plan.reference}</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="/test_plan/${test_plan.id}?extended_view=1">
+                                <span class="block">+ extended view</span>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="/edit_test_plan/${test_plan.id}">
+                                <span class="block">+ edit test plan</span>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="/delete_test_plan/${test_plan.id}">
+                                <span class="block">+ delete test plan</span>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="/upgrade_tests/${test_plan.id}">
+                                <span class="block">+ upgrade tests</span>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="/edit_sections/${test_plan.id}">
+                                <span class="block">+ manage sections</span>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="/edit_objective/0/${test_plan.id}">
+                                <span class="block">+ add an objective</span>
+                            </a>
+                        </td>
+                    </tr>
+                </py:if>
 
-	<py:if test="str(select('@campaign'))">
-	  <tr><td><a href="/campaign/${camp.id}">${camp.reference}</a></td></tr>
-	  <tr><td>  <a href="/edit_campaign/${camp.id}"><span class="block">+ edit campaign</span></a> </td></tr>
-	  <tr><td>  <a href="/delete_campaign/${camp.id}"><span class="block">+ delete campaign</span></a> </td></tr>
-	  <tr><td>  <a href="/edit_run/0/${camp.id}"><span class="block">+ prepare a run</span></a> </td></tr>
-	  <tr><td>  <a href="/compare_runs/${camp.id}"><span class="block">+ compare runs</span></a> </td></tr>
-	</py:if>
+                <py:if test="str(select('@campaign'))">
+                    <tr>
+                        <td>
+                            <a href="/campaign/${camp.id}">${camp.reference}</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="/edit_campaign/${camp.id}">
+                                <span class="block">+ edit campaign</span>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="/delete_campaign/${camp.id}">
+                                <span class="block">+ delete campaign</span>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="/edit_run/0/${camp.id}">
+                                <span class="block">+ prepare a run</span>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="/compare_runs/${camp.id}">
+                                <span class="block">+ compare runs</span>
+                            </a>
+                        </td>
+                    </tr>
+                </py:if>
 
 
-	<py:if test="str(select('@objective'))">
-	  <tr><td><a href="/objective/${obj.id}">${obj.reference}</a></td></tr>
-	  <tr><td>  <a href="/edit_objective/${obj.id}"><span class="block">+ edit objective</span></a> </td></tr>
-	  <tr><td>  <a href="/delete_objective/${obj.id}"><span class="block">+ delete objective</span></a> </td></tr>
-	  <tr><td>  <a href="/edit_obj_tests/${obj.id}"><span class="block">+ edit objective tests</span></a> </td></tr>
-	  <tr><td>  <a href="/edit_test/0/${obj.id}"><span class="block">+ create test</span></a> </td></tr>
-	</py:if>
+                <py:if test="str(select('@objective'))">
+                    <tr>
+                        <td>
+                            <a href="/objective/${obj.id}">${obj.reference}</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="/edit_objective/${obj.id}">
+                                <span class="block">+ edit objective</span>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="/delete_objective/${obj.id}">
+                                <span class="block">+ delete objective</span>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="/edit_obj_tests/${obj.id}">
+                                <span class="block">+ edit objective tests</span>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="/edit_test/0/${obj.id}">
+                                <span class="block">+ create test</span>
+                            </a>
+                        </td>
+                    </tr>
+                </py:if>
 
-	<py:if test="str(select('@tspec'))">
-	  <tr><td><a href="/test/${tspec.id}">${tspec.reference}</a></td></tr>
-	  <tr><td>  <a href="/edit_test/${tspec.id}"><span class="block">+ edit test</span></a> </td></tr>
-	  <tr><td>  <a href="/edit_test_code/${tspec.id}"><span class="block">+ edit code</span></a> </td></tr>
-	  <tr><td>  <a href="/delete_test/${tspec.id}"><span class="block">+ delete test</span></a> </td></tr>
-	</py:if>
+                <py:if test="str(select('@tspec'))">
+                    <tr>
+                        <td>
+                            <a href="/test/${tspec.id}">${tspec.reference}</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="/edit_test/${tspec.id}">
+                                <span class="block">+ edit test</span>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="/edit_test_code/${tspec.id}">
+                                <span class="block">+ edit code</span>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="/delete_test/${tspec.id}">
+                                <span class="block">+ delete test</span>
+                            </a>
+                        </td>
+                    </tr>
+                </py:if>
 
-	<py:if test="str(select('@test_mean'))">
-	  <tr><td><a href="/test_mean/${tm.id}">${tm.reference}</a></td></tr>
-	  <tr><td>  <a href="/edit_test_mean/${tm.id}"><span class="block">+ edit test mean</span></a> </td></tr>
-	  <tr><td>  <a href="/delete_test_mean/${tm.id}"><span class="block">+ delete test mean</span></a> </td></tr>
-	</py:if>
+                <py:if test="str(select('@test_mean'))">
+                    <tr>
+                        <td>
+                            <a href="/test_mean/${tm.id}">${tm.reference}</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="/edit_test_mean/${tm.id}">
+                                <span class="block">+ edit test mean</span>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="/delete_test_mean/${tm.id}">
+                                <span class="block">+ delete test mean</span>
+                            </a>
+                        </td>
+                    </tr>
+                </py:if>
 
 
-      </table>
-    </div>
-  </py:match>
+            </table>
+        </div>
+    </py:match>
 
 
-  <?python
+    <?python
     def get_sort_url(key):
         sk = sortkey[:]
 	if key in sk:
@@ -115,18 +296,20 @@
 	    url+="&rev=1"
 	return url
   ?>
-  <py:match path="th">
-    <py:with vars="key=str(select('@sortkey')); header=select('*|text()')">
-      <py:if test="key">
-	<th><a href="${get_sort_url(key)}">${header}</a></th>
-      </py:if>
-      <py:if test="not key">
-	<th>${header}</th>
-      </py:if>
-    </py:with>
-  </py:match>
-	
-  
+    <py:match path="th">
+        <py:with vars="key=str(select('@sortkey')); header=select('*|text()')">
+            <py:if test="key">
+                <th>
+                    <a href="${get_sort_url(key)}">${header}</a>
+                </th>
+            </py:if>
+            <py:if test="not key">
+                <th>${header}</th>
+            </py:if>
+        </py:with>
+    </py:match>
+
+
 
 
 </html>

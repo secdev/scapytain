@@ -1,44 +1,48 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:xi="http://www.w3.org/2001/XInclude"
       xmlns:py="http://genshi.edgewall.org/">
-  
-<xi:include href="layout.xml" />
 
-  <head>
-    <title>Upgrading tests used by ${test_plan.reference}: ${test_plan.name}</title>
-  </head>
+    <xi:include href="layout.xml" />
+
+    <head>
+        <title>Upgrading tests used by ${test_plan.reference}: ${test_plan.name}</title>
+    </head>
 
 
-  <body>
-    
+    <body>
 
-    <menu py:attrs="menu" />
-    <bigtitle title="Upgrading tests used by ${test_plan.reference}: ${test_plan.name}" />
-    <div class="navbar">
-      <a href="/">Home</a> &gt; 
-      <a href="/test_plan/${test_plan.id}">${test_plan.reference}</a> &gt; 
-    </div>
 
-    <div class="content">
-      <h1>Upgrading tests used by ${test_plan.reference}: ${test_plan.name}</h1>
+        <menu py:attrs="menu" />
+        <bigtitle title="Upgrading tests used by ${test_plan.reference}: ${test_plan.name}" />
+        <div class="navbar">
+            <a href="/">Home</a> &gt; 
+            <a href="/test_plan/${test_plan.id}">${test_plan.reference}</a> &gt; 
+        </div>
 
-	<ul>
-	  <li py:for="obj,tspec,v1,v2 in upgrade">
+        <div class="content">
+            <h1>Upgrading tests used by ${test_plan.reference}: ${test_plan.name}</h1>
+
+            <ul>
+                <li py:for="obj,tspec,v1,v2 in upgrade">
 	    ${obj.reference}, ${tspec.reference}: ${tspec.name}. Upgrading from version ${v1} to ${v2}
-	  </li>
-	</ul>
-	
-	<form py:if="upgrade" method="POST" action="/upgrade_tests/${test_plan.id}">
-	  <table><tr>
-	    <td>Are you sure ?</td>
-	    <td><input type="submit" value="Upgrade" /></td>
-	  </tr></table>
-	</form>
+                </li>
+            </ul>
 
-	<p py:if="not upgrade">
+            <form py:if="upgrade" method="POST" action="/upgrade_tests/${test_plan.id}">
+                <table>
+                    <tr>
+                        <td>Are you sure ?</td>
+                        <td>
+                            <input type="submit" value="Upgrade" />
+                        </td>
+                    </tr>
+                </table>
+            </form>
+
+            <p py:if="not upgrade">
 	  All tests are already at the latest version
-	</p>
-    </div>
-  </body>
+            </p>
+        </div>
+    </body>
 </html>
 

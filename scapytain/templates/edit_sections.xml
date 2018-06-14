@@ -2,41 +2,41 @@
       xmlns:xi="http://www.w3.org/2001/XInclude"      
       xmlns:py="http://genshi.edgewall.org/">
 
-<xi:include href="layout.xml" />
+    <xi:include href="layout.xml" />
 
 
-  <head>
-    <title>Edit test plan sections</title>
-  </head>
+    <head>
+        <title>Edit test plan sections</title>
+    </head>
 
-  <body>
+    <body>
 
-    <menu test_plan="${test_plan.id}" />
-    <bigtitle title="Edit test plan sections" />
-    <div class="navbar">
-        <a href="/">Home</a> &gt;
-        <a href="/test_plan/">Test Plans</a> &gt;
-        <a href="/test_plan/${test_plan.id}">${test_plan.reference}</a> &gt;
-    </div>
+        <menu test_plan="${test_plan.id}" />
+        <bigtitle title="Edit test plan sections" />
+        <div class="navbar">
+            <a href="/">Home</a> &gt;
+            <a href="/test_plan/">Test Plans</a> &gt;
+            <a href="/test_plan/${test_plan.id}">${test_plan.reference}</a> &gt;
+        </div>
 
-    <div class="content">
-      <h1>Sections for ${test_plan.reference} (${test_plan.name})</h1>
+        <div class="content">
+            <h1>Sections for ${test_plan.reference} (${test_plan.name})</h1>
 
-      <form method="POST" action="/edit_sections/${test_plan.id}" enctype="multipart/form-data">
-	<table>
-	  <tr py:for="sec in test_plan.sections">
-	    <td>
-	      <input type="text" name="${sec.id}" size="120" value="${sec.name}" />
-	    </td>
-	  </tr>
-	  
-	</table>
+            <form method="POST" action="/edit_sections/${test_plan.id}" enctype="multipart/form-data">
+                <table>
+                    <tr py:for="sec in test_plan.sections">
+                        <td>
+                            <input type="text" name="${sec.id}" size="120" value="${sec.name}" />
+                        </td>
+                    </tr>
 
-	<input type="submit" value="Rename all, delete empty" />
-      </form>
+                </table>
 
-    </div>
+                <input type="submit" value="Rename all, delete empty" />
+            </form>
 
-  </body>
+        </div>
+
+    </body>
 </html>
 

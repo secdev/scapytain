@@ -1,61 +1,70 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:xi="http://www.w3.org/2001/XInclude"
       xmlns:py="http://genshi.edgewall.org/">
-  
-<xi:include href="layout.xml" />
 
-  <head>
-    <title>Objective ${obj.reference}</title>
-  </head>
+    <xi:include href="layout.xml" />
+
+    <head>
+        <title>Objective ${obj.reference}</title>
+    </head>
 
 
-  <body py:with="test_plan=obj.test_plan">
-    
-    <menu test_plan="${test_plan.id}" objective="${obj.id}" />
+    <body py:with="test_plan=obj.test_plan">
 
-    <bigtitle title="Objective description" />
-    <div class="navbar"><a href="/">Home</a> &gt; 
-                        <a href="/test_plan/">Test Plans</a> &gt;
-                        <a href="/test_plan/${test_plan.id}">${test_plan.reference}</a> &gt;
-                        <a href="/objective/${obj.id}">${obj.reference}</a> &gt;
-    </div>
-    
-    <div class="content">
-	
-	
-      <h1>${obj.reference}: ${obj.name}</h1>
+        <menu test_plan="${test_plan.id}" objective="${obj.id}" />
 
-      <p py:if="obj.applicable">
+        <bigtitle title="Objective description" />
+        <div class="navbar">
+            <a href="/">Home</a> &gt; 
+            <a href="/test_plan/">Test Plans</a> &gt;
+            <a href="/test_plan/${test_plan.id}">${test_plan.reference}</a> &gt;
+            <a href="/objective/${obj.id}">${obj.reference}</a> &gt;
+        </div>
+
+        <div class="content">
+
+
+            <h1>${obj.reference}: ${obj.name}</h1>
+
+            <p py:if="obj.applicable">
 	Objective is applicable
-      </p>
-      <p py:if="not obj.applicable">
+            </p>
+            <p py:if="not obj.applicable">
 	Objective is NOT applicable
-      </p>
+            </p>
 
-      <h2>Description</h2>
+            <h2>Description</h2>
 
-      <pre class="text">${obj.description}</pre>
+            <pre class="text">${obj.description}</pre>
 
-      <h2>Rationale</h2>
+            <h2>Rationale</h2>
 
-      <p>
+            <p>
       ${obj.rationale}
-      </p>
+            </p>
 
-      <h2>Related tests</h2>
-      
-      <table class="list">
-	<tr><th>Reference</th><th>Name</th><th>Description</th><th>Expected result</th><th>Version</th></tr>
-	<tr py:for="tcode in obj.tests" py:with="tspec=tcode.test_spec">
-	  <td><a href="/test/${tspec.id}">${tspec.reference}</a></td>
-	  <td>${tspec.name}</td>
-	  <td>${tspec.description}</td>
-	  <td>${tspec.expected_result}</td>
-	  <td class="nb">${tcode.version}/${len(list(tspec.tests))}</td>
-	</tr>
-      </table>
-	
-    </div>
-  </body>
+            <h2>Related tests</h2>
+
+            <table class="list">
+                <tr>
+                    <th>Reference</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Expected result</th>
+                    <th>Version</th>
+                </tr>
+                <tr py:for="tcode in obj.tests" py:with="tspec=tcode.test_spec">
+                    <td>
+                        <a href="/test/${tspec.id}">${tspec.reference}</a>
+                    </td>
+                    <td>${tspec.name}</td>
+                    <td>${tspec.description}</td>
+                    <td>${tspec.expected_result}</td>
+                    <td class="nb">${tcode.version}/${len(list(tspec.tests))}</td>
+                </tr>
+            </table>
+
+        </div>
+    </body>
 </html>
 

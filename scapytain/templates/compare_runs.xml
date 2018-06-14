@@ -1,40 +1,40 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:xi="http://www.w3.org/2001/XInclude"
       xmlns:py="http://genshi.edgewall.org/">
-  
-<xi:include href="layout.xml" />
 
-  <head>
-    <title>Runs from ${camp.reference}</title>
-  </head>
+    <xi:include href="layout.xml" />
+
+    <head>
+        <title>Runs from ${camp.reference}</title>
+    </head>
 
 
-  <body>
-    
-    <menu campaign="${camp.id}" />
+    <body>
 
-    <bigtitle title="All runs from campaign ${camp.reference}" />
-    <div class="navbar">
-      <a href="/">Home</a> &gt; 
-      <a href="/campaign/">Campaigns</a> &gt;
-      <a href="/campaign/${camp.id}">${camp.reference}</a> &gt;
-      <a href="/compare_runs/${camp.id}">Runs of ${camp.reference}</a> &gt;
-    </div>
-    
-    <div class="content">
-	
-	
-      <h1>${camp.reference}: ${camp.name}</h1>
-	
-      <p>
+        <menu campaign="${camp.id}" />
+
+        <bigtitle title="All runs from campaign ${camp.reference}" />
+        <div class="navbar">
+            <a href="/">Home</a> &gt; 
+            <a href="/campaign/">Campaigns</a> &gt;
+            <a href="/campaign/${camp.id}">${camp.reference}</a> &gt;
+            <a href="/compare_runs/${camp.id}">Runs of ${camp.reference}</a> &gt;
+        </div>
+
+        <div class="content">
+
+
+            <h1>${camp.reference}: ${camp.name}</h1>
+
+            <p>
 	${camp.description}
-      </p>
+            </p>
 
-      <h2>Campaign runs</h2>
-      
-      
-      
-      <?python
+            <h2>Campaign runs</h2>
+
+
+
+            <?python
 	all_res={}
         all_tests=[]
 
@@ -47,27 +47,33 @@
       ?>
 
 
-      <table class="list">
-	<tr>
-	  <th></th>
-	  <th py:for="run in camp.campaign_runs"><a href="/campaign_run/${run.id}"><br py:for="c in run.reference">$c</br></a></th>
-	</tr>
-	<tr py:for="test in all_tests">
-	  <th><a href="/test/${test.test_spec.id}">${test.test_spec.reference} v${test.version}/${len(list(test.test_spec.tests))}</a></th>
-	  <py:for each="run in camp.campaign_runs" py:with="res=all_res[run.id].get(test.id)">
-	    <td py:if="res is not None" class="${res.status.css_class}">
-	      <a href="/result/${res.id}">${res.status.status}</a>
-	    </td>
-	    <td py:if="res is None" class="test_absent"></td>
-	  </py:for>
-	</tr>
+            <table class="list">
+                <tr>
+                    <th/>
+                    <th py:for="run in camp.campaign_runs">
+                        <a href="/campaign_run/${run.id}">
+                            <br py:for="c in run.reference">$c</br>
+                        </a>
+                    </th>
+                </tr>
+                <tr py:for="test in all_tests">
+                    <th>
+                        <a href="/test/${test.test_spec.id}">${test.test_spec.reference} v${test.version}/${len(list(test.test_spec.tests))}</a>
+                    </th>
+                    <py:for each="run in camp.campaign_runs" py:with="res=all_res[run.id].get(test.id)">
+                        <td py:if="res is not None" class="${res.status.css_class}">
+                            <a href="/result/${res.id}">${res.status.status}</a>
+                        </td>
+                        <td py:if="res is None" class="test_absent"/>
+                    </py:for>
+                </tr>
 
-      </table>
+            </table>
 
 
 
-	
-    </div>
-  </body>
+
+        </div>
+    </body>
 </html>
 

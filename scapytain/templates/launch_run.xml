@@ -1,56 +1,62 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:xi="http://www.w3.org/2001/XInclude"
       xmlns:py="http://genshi.edgewall.org/">
-  
-<xi:include href="layout.xml" />
 
-  <head>
-    <title>Launching Campaign Run ${run.reference}</title>
-  </head>
+    <xi:include href="layout.xml" />
 
-
-  <body py:with="camp=run.campaign">
-    
-    <menu campaign="${camp.id}" run="${run.id}"/>
-
-    <bigtitle title="Launching Campaign Run" />
-    <div class="navbar">
-      <a href="/">Home</a> &gt; 
-      <a href="/campaign/">Campaigns</a> &gt;
-      <a href="/campaign/${camp.id}">${camp.reference}</a> &gt;
-      <a href="/campaign_run/${run.id}">${run.reference}</a> &gt;
-    </div>
-    
-    <div class="content">
-	
-      <h1><a href="/campaign_run/${run.id}">${run.reference}: ${run.name}</a></h1>
+    <head>
+        <title>Launching Campaign Run ${run.reference}</title>
+    </head>
 
 
-      <h2>Summary</h2>
+    <body py:with="camp=run.campaign">
 
-      <h3>Description</h3>
-      <p>
+        <menu campaign="${camp.id}" run="${run.id}"/>
+
+        <bigtitle title="Launching Campaign Run" />
+        <div class="navbar">
+            <a href="/">Home</a> &gt; 
+            <a href="/campaign/">Campaigns</a> &gt;
+            <a href="/campaign/${camp.id}">${camp.reference}</a> &gt;
+            <a href="/campaign_run/${run.id}">${run.reference}</a> &gt;
+        </div>
+
+        <div class="content">
+
+            <h1>
+                <a href="/campaign_run/${run.id}">${run.reference}: ${run.name}</a>
+            </h1>
+
+
+            <h2>Summary</h2>
+
+            <h3>Description</h3>
+            <p>
 	${run.description}
-      </p>
-      <h3>Context</h3>
-      <p>
+            </p>
+            <h3>Context</h3>
+            <p>
 	${run.context}
-      </p>
+            </p>
 
-      <h2>Details</h2>
-      
+            <h2>Details</h2>
+
       Campaign run ${run.reference}. Date: ${run.date}
 
 
-      <h2>Related tests</h2>
-      
-      <table class="list">
-	<tr><th>Test</th><th>Name</th><th>Status</th></tr>
-	<tbody id="insert_tests_here">
-	</tbody>
-      </table>
+            <h2>Related tests</h2>
 
-    </div>
-  </body>
+            <table class="list">
+                <tr>
+                    <th>Test</th>
+                    <th>Name</th>
+                    <th>Status</th>
+                </tr>
+                <tbody id="insert_tests_here">
+                </tbody>
+            </table>
+
+        </div>
+    </body>
 </html>
 
