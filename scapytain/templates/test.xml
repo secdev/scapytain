@@ -24,137 +24,136 @@
 
             <h1>${tspec.reference}: ${tspec.name}</h1>
 
-            <py:if test="tspec.description">
-                <h2>Test description</h2>
-                <p>
+            <table style="width: 80%; margin-bottom: 1%;">
+                <tr>
+                    <td valign="top">
+                        <py:if test="tspec.description">
+                            <h2>Test description</h2>
+                            <p>
 	  ${tspec.description}
-                </p>
-            </py:if>
+                            </p>
+                        </py:if>
 
-            <py:if test="tspec.expected_result">
-                <h2>Expected result</h2>
-                <p>
+                        <py:if test="tspec.expected_result">
+                            <h2>Expected result</h2>
+                            <p>
 	  ${tspec.expected_result}
-                </p>
-            </py:if>
+                            </p>
+                        </py:if>
+
+                        <py:if test="[o for t in tspec.tests for o in t.objectives]">
+                            <h2>Objectives using it</h2>
+
+                            <table class="list">
+                                <tr>
+                                    <th>Identifier</th>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Priority</th>
+                                    <th>#Tests</th>
+                                    <th>version</th>
+                                </tr>
+                                <tr py:for="obj,tst in ((o,t) for t in tspec.tests for o in t.objectives)">
+                                    <td>
+                                        <a href="/objective/${obj.id}">${obj.reference}</a>
+                                    </td>
+                                    <td>${obj.name}</td>
+                                    <td>${obj.description}</td>
+                                    <td class="nb">${obj.priority}</td>
+                                    <td class="nb">${len(obj.tests)}</td>
+                                    <td class="nb">${tst.version}</td>
+                                </tr>
+                            </table>
+                        </py:if>
 
 
-            <py:if test="tspec.parents or tspec.children">
+                        <h2>Test implementation</h2>
+                        <p>
+                            <a href="/test/${tspec.id}?diff=${int(not differ)}">
+                                <input type="button" value="switch diff mode" />
+                            </a>
+                        </p>
 
-                <h2>Dependencies</h2>
+                        <py:with vars="latest=None">
 
-                <py:if test="tspec.parents">
+                            <py:for each="tcode in tspec.tests[::-1]">
 
-                    <h3>Direct parents</h3>
+                                <h3>Version ${tcode.version}</h3>
 
-                    <table class="list">
-                        <tr>
-                            <th>Reference</th>
-                            <th>Name</th>
-                            <th>Description</th>
-                            <th>Version</th>
-                        </tr>
-                        <tr py:for="ts in tspec.parents">
-                            <td>
-                                <a href="/test/${ts.id}">${ts.reference}</a>
-                            </td>
-                            <td>${ts.name}</td>
-                            <td>${ts.description}</td>
-                            <td>${ts.tests[-1].version}</td>
-                        </tr>
-                    </table>
-
-                </py:if>
-
-                <h3>Dependency graph</h3>
-
-	${Markup(imagemap)}
-                <img border="0" usemap="#test_dep" src="/test_graph/${tspec.id}" />
-
-            </py:if>
-
-
-            <py:if test="[o for t in tspec.tests for o in t.objectives]">
-                <h2>Objectives using it</h2>
-
-                <table class="list">
-                    <tr>
-                        <th>Identifier</th>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Priority</th>
-                        <th>#Tests</th>
-                        <th>version</th>
-                    </tr>
-                    <tr py:for="obj,tst in ((o,t) for t in tspec.tests for o in t.objectives)">
-                        <td>
-                            <a href="/objective/${obj.id}">${obj.reference}</a>
-                        </td>
-                        <td>${obj.name}</td>
-                        <td>${obj.description}</td>
-                        <td class="nb">${obj.priority}</td>
-                        <td class="nb">${len(obj.tests)}</td>
-                        <td class="nb">${tst.version}</td>
-                    </tr>
-                </table>
-            </py:if>
-
-
-            <h2>Test implementation</h2>
-            <p>
-                <a href="/test/${tspec.id}?diff=${int(not differ)}">
-                    <input type="button" value="switch diff mode" />
-                </a>
-            </p>
-
-            <py:with vars="latest=None">
-
-                <py:for each="tcode in tspec.tests[::-1]">
-
-                    <h3>Version ${tcode.version}</h3>
-
-                    <p>
+                                <p>
 	    ${tcode.comment}
-                    </p>
+                                </p>
 
-                    <py:if test="differ and latest">
+                                <py:if test="differ and latest">
 	    ${Markup(differ.make_table(tcode.code.splitlines(),latest.code.splitlines(),
                                        fromdesc="version %i" % tcode.version,
                                        todesc="version %i" % latest.version,
 	                               context=True,numlines=3))}
-                    </py:if>
-                    <py:if test="not (differ and latest)">
+                                </py:if>
+                                <py:if test="not (differ and latest)">
 	    ${Markup(hl_python(tcode.code))}
-                    </py:if>
+                                </py:if>
 
-                    <p>
-                        <table>
-                            <tr>
-                                <td>
-                                    <form method="POST" action="/run_test/${tspec.id}/${tcode.version}">
+                                <p>
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <form method="POST" action="/run_test/${tspec.id}/${tcode.version}">
 
-                                        <select size="1" id="tmean_id" name="tmean_id" title="test_mean">
-                                            <option value="none">-- NO TEST MEAN --</option>
-                                            <option py:for="tm in test_means" value="${tm.id}" py:with="text='%s: %s'%(tm.reference,tm.name)">$text</option>
-                                        </select>
-                                        <input type="submit" value="RUN THIS TEST" />
-                                    </form>
-                                </td>
-                                <td>
-                                    <a href="/delete_test_version/${tspec.id}/${tcode.version}">
-                                        <input type="button" value="delete this version" />
-                                    </a>
-                                </td>
-                            </tr>
-                        </table>
-                    </p>
+                                                    <select size="1" id="tmean_id" name="tmean_id" title="test_mean">
+                                                        <option value="none">-- NO TEST MEAN --</option>
+                                                        <option py:for="tm in test_means" value="${tm.id}" py:with="text='%s: %s'%(tm.reference,tm.name)">$text</option>
+                                                    </select>
+                                                    <input type="submit" value="RUN THIS TEST" />
+                                                </form>
+                                            </td>
+                                            <td>
+                                                <a href="/delete_test_version/${tspec.id}/${tcode.version}">
+                                                    <input type="button" value="delete this version" />
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </p>
 
-                    <?python latest = tcode ?>
+                                <?python latest = tcode ?>
 
-                </py:for>
+                            </py:for>
 
-            </py:with>
+                        </py:with>
+                    </td>
+                    <td valign="top" align="right">
+                        <py:if test="tspec.parents or tspec.children">
+                            <h2>Dependencies</h2>
 
+                            <py:if test="tspec.parents">
+
+                                <h3>Direct parents</h3>
+
+                                <table class="list">
+                                    <tr>
+                                        <th>Reference</th>
+                                        <th>Name</th>
+                                        <th>Description</th>
+                                        <th>Version</th>
+                                    </tr>
+                                    <tr py:for="ts in tspec.parents">
+                                        <td>
+                                            <a href="/test/${ts.id}">${ts.reference}</a>
+                                        </td>
+                                        <td>${ts.name}</td>
+                                        <td>${ts.description}</td>
+                                        <td>${ts.tests[-1].version}</td>
+                                    </tr>
+                                </table>
+
+                            </py:if>
+                            <h3>Dependency graph</h3>
+                            <img border="0" usemap="#test_dep" src="/test_graph/${tspec.id}" />
+                        </py:if>
+                    </td>
+                </tr>
+            </table>
         </div>
     </body>
 </html>
