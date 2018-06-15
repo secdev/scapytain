@@ -23,6 +23,7 @@ import sqlobject
 from sqlobject import SQLObjectIntegrityError
 import trml2pdf
 import logging
+import tempfile
 
 from . import config
 from . import validate
@@ -31,6 +32,7 @@ from .dbobjects import *
 from .error import ScapytainException
 from .highlight import highlight_python
 from . import scapy_proxy
+from scapy.utils import do_graph
 import six
 
 
@@ -212,8 +214,7 @@ class Root(object):
             if diff:
                 differ=difflib.HtmlDiff()
             tspec = validate.TestSpecId().to_python(tspec_id)
-            imagemap = self.get_dependencies_graph(tspec, format="cmapx").decode("utf-8")
-            stream = loader.load('test.xml').generate(tspec=tspec,hl_python=highlight_python,imagemap=imagemap,
+            stream = loader.load('test.xml').generate(tspec=tspec,hl_python=highlight_python,
                                                       differ=differ,test_means=Test_Mean.select())
         return stream.render('html', doctype='html')
 
@@ -258,9 +259,6 @@ class Root(object):
         return seen
 
     def get_dependencies_graph(self, tspec, format="png"):
-        w,r = os.popen2("tee /tmp/toto.dot | dot -T%s" % format)
-        out = lambda x:w.write(x.encode("utf-8"))
-
         label = lambda t:t.reference.replace('"','\"')
         id = lambda t:"t%i" % t.id
         node = lambda t: '\t%s [label="%s", href="/test/%i"]\n' % (id(t),label(t),t.id)
@@ -269,43 +267,50 @@ class Root(object):
         parents = self.get_all_parents(tspec.parents)
         children = self.get_all_children(tspec.children)
         
-        out('digraph test_dep {\n')
-        out('\tnode [shape="box", style="filled"];\n')
+        s = 'digraph test_dep {\n'
+        s += '\tnode [shape="box", style="filled"];\n'
         
         # current node
-        out('\tnode [fillcolor="#0099d8"];\n')
-        out(node(tspec))
+        s += '\tnode [fillcolor="#0099d8"];\n'
+        s += node(tspec)
 
         # parent nodes
-        out('\tnode [fillcolor="#a0e0a0"];\n')
+        s += '\tnode [fillcolor="#a0e0a0"];\n'
         for p in parents:
-            out(node(p))
+            s += node(p)
 
         # children nodes
-        out('\tnode [fillcolor="#e0a0a0"];\n')
+        s += '\tnode [fillcolor="#e0a0a0"];\n'
         for c in children:
-            out(node(c))
+            s += node(c)
 
         for p in tspec.parents:
-            out(link(p,tspec))
+            s += link(p,tspec)
         for c in tspec.children:
-            out(link(tspec,c))
+            s += link(tspec,c)
         for p in parents:
             for pp in p.parents:
-                out(link(pp,p))
+                s += link(pp,p)
         for c in children:
             for cc in c.children:
-                out(link(c,cc))
-        out("}\n")
-        w.close()
-        return r.read()
+                s += link(c,cc)
+        s += "}\n"
+        with tempfile.TemporaryFile(prefix="scapytain", suffix="." + format) as tf:
+            target = tf.name
+        do_graph(s, target=target)
+        with open(target, "rb") as tf:
+            data = tf.read()
+        return data
 
     @cherrypy.expose
     def test_graph(self, tspec_id):
         tspec = validate.TestSpecId().to_python(tspec_id)
         png = self.get_dependencies_graph(tspec, format="png")
-        cherrypy.response.headers['Content-Type'] = "image/png"
-        return png
+        if png:
+            cherrypy.response.headers['Content-Type'] = "image/png"
+            return png
+        else:
+            return "COULD NOT GENERATE THE DEPEDENCY GRAPH"
         
 
     @cherrypy.expose
