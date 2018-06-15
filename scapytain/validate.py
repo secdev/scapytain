@@ -109,3 +109,5 @@ class TestMean(formencode.Schema):
     name = validators.UnicodeString(not_empty=True, encoding='utf-8')
     description = validators.UnicodeString(encoding='utf-8')
     code_init = validators.UnicodeString(encoding='utf-8')
+    keywords = validators.UnicodeString(encoding='utf-8')
+    keywords_mode = validators.Int(encoding='utf-8')

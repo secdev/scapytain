@@ -62,7 +62,7 @@ class ScapyProxy(object):
             yield x, self.run(key(x))
         
 
-    def run_tests_with_dependencies(self, lst, key, init=None):
+    def run_tests_with_dependencies(self, lst, key, init=None, keywords=None):
         if init:
             res_val, res, exn = self.run(init)
             if res_val != 1:
@@ -89,6 +89,11 @@ class ScapyProxy(object):
             tcode = key(x)
             code = tcode.code
             tspec = tcode.test_spec
+            if keywords:
+                if not keywords(tcode):
+                    done.append(tspec)
+                    yield x, (4,"",None) # In the list it's 4, the real status number is 8
+                    continue
             
             if depfailed:
                 res_val,res,exn = result = 3,"",None

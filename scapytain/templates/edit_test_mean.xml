@@ -76,7 +76,35 @@
                         </td>
                     </tr>
 
+                    <tr>
+                        <th>
+                            <label for="keywords">Keywords arguments (split with spaces)</label>
+                        </th>
+                        <td/>
+                        <td class="error" py:if="'keywords' in errors">${errors.keywords}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <textarea class="keywords" id="keywords" name="keywords" rows="1" cols="80" />
+                        </td>
+                    </tr>
 
+                    <tr>
+                        <th>
+                            <label for="keywords_mode">Keywords mode</label>
+                        </th>
+                        <td/>
+                        <td class="error" py:if="'keywords_mode' in errors">${errors.keywords_mode}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <input type="radio" id="keywords_mode_kwok" name="keywords_mode" value="keywords_mode_kwok" />
+                            <label for="keywords_mode_kwok">Only the keywords</label>
+
+                            <input type="radio" id="keywords_mode_kwko" name="keywords_mode" value="keywords_mode_kwko" checked="checked" />
+                            <label for="keywords_mode_kwko">All but the keywords</label>
+                        </td>
+                    </tr>
 
                 </table>
                 <input type="submit" value="Go!" />
@@ -86,4 +114,3 @@
 
     </body>
 </html>
-

@@ -9,8 +9,12 @@
     </head>
 
 
-    <body py:with="test_plan=obj.test_plan">
-
+    <body py:with="baseurl='/objective/%i' % obj.id; test_plan=obj.test_plan">
+        <?python
+          if extended_view:
+             baseurl += "?extended_view=1"
+        ?>
+    
         <menu test_plan="${test_plan.id}" objective="${obj.id}" />
 
         <bigtitle title="Objective description" />
@@ -51,6 +55,7 @@
                     <th>Name</th>
                     <th>Description</th>
                     <th>Expected result</th>
+                    <th py:if="extended_view">Keywords</th>
                     <th>Version</th>
                 </tr>
                 <tr py:for="tcode in obj.tests" py:with="tspec=tcode.test_spec">
@@ -60,6 +65,7 @@
                     <td>${tspec.name}</td>
                     <td>${tspec.description}</td>
                     <td>${tspec.expected_result}</td>
+                    <td py:if="extended_view">${tspec.keywords.strip()}</td>
                     <td class="nb">${tcode.version}/${len(list(tspec.tests))}</td>
                 </tr>
             </table>

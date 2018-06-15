@@ -47,7 +47,7 @@ class Root(object):
 
     @cherrypy.expose
     def index(self):
-        raise cherrypy.HTTPRedirect("/test_plan")
+        raise cherrypy.HTTPRedirect("/campaign")
 
     @cherrypy.expose
     def help(self):
@@ -66,6 +66,25 @@ class Root(object):
             tmpl = loader.load("test_plans.xml")
             return tmpl.generate(sortkey_getter=sortkey_getter,sortkey=sortkey,rev=rev,
                                  test_plans=Test_Plan.select()).render("html", doctype="html")
+
+    @cherrypy.expose
+    def import_utsc(self, utsc_file=None):
+        tmpl = loader.load('import_utsc.xml')
+        action = "/import_utsc"
+        errors = {}
+        if cherrypy.request.method == 'POST':
+            if utsc_file:
+                try:
+                    def txn(utsc_file):
+                        import_utsc_data(utsc_file)
+                    DO_TXN(txn, utsc_file)
+                    raise cherrypy.HTTPRedirect("/campaign")
+                except IOError as e:
+                    errors["utsc_file"] = str(e)
+            else:
+                errors["utsc_file"] = "No file input !"
+        stream = tmpl.generate(action=action, errors=errors) | HTMLFormFiller(data={"utsc_file": utsc_file})
+        return stream.render('html', doctype='html')
 
     @cherrypy.expose
     def edit_test_plan(self, test_plan_id=None, uts_file=None, uts_dependency=False, **post_data):
@@ -175,10 +194,10 @@ class Root(object):
         return stream.render('html', doctype='html')
 
     @cherrypy.expose
-    def objective(self, obj_id):
+    def objective(self, obj_id, extended_view=False):
         obj = validate.ObjectiveId().to_python(obj_id)
         tmpl = loader.load('objective.xml')
-        return tmpl.generate(obj=obj).render('html', doctype='html')
+        return tmpl.generate(obj=obj, extended_view=extended_view).render('html', doctype='html')
 
 
     @cherrypy.expose
@@ -551,6 +570,10 @@ class Root(object):
             action += "/%i" % test_mean.id
             
         if cherrypy.request.method == 'POST':
+            if post_data["keywords_mode"] == "keywords_mode_kwok":
+                post_data["keywords_mode"] = 0
+            elif post_data["keywords_mode"] == "keywords_mode_kwko":
+                post_data["keywords_mode"] = 1
             try:
                 valid_data = validate.TestMean().to_python(post_data)
             except formencode.Invalid as e:
@@ -566,16 +589,12 @@ class Root(object):
                     if image is not None and image.file is not None:
                         test_mean.set(image=image.file.read(), image_mime=image.type)
                     return test_mean
-                test_mean = DO_TXN(txn,test_mean)
+                test_mean = DO_TXN(txn, test_mean)
                 raise cherrypy.HTTPRedirect("/test_mean/%i" % test_mean.id)
 
         tmpl = loader.load('edit_test_mean.xml')
         stream = tmpl.generate(action=action , errors=errors) | HTMLFormFiller(data=data)
         return stream.render('html', doctype='html')
-
-
-
-
 
 
     @cherrypy.expose
@@ -596,6 +615,10 @@ class Root(object):
                                       context="")
                     except cherrypy.HTTPRedirect as e:
                         raise cherrypy.HTTPRedirect("/launch_run/%s" % e.urls[0].split("/")[-1])
+                elif post_data.get("resume_quick_run", False):
+                    camp.campaign_runs.sort(key=lambda o: o.date)
+                    last_run = camp.campaign_runs[0]
+                    raise cherrypy.HTTPRedirect("/launch_run/%s" % last_run.id)
                 elif post_data.get("actions_runs", False):
                     selected = []
                     for run in camp.campaign_runs:
@@ -705,9 +728,9 @@ class Root(object):
             if camp.test_mean:
                 data["test_mean"] = camp.test_mean.id
             # Get them to post data if missing
-            if "test_mean" in post_data and post_data["test_mean"] is None:
+            if "test_mean" in data and post_data.get("test_mean", None) is None:
                 post_data["test_mean"] = data["test_mean"]
-            if "reference" in post_data and post_data["reference"] is None:
+            if "reference" in data and post_data.get("reference", None) is None:
                 post_data["reference"] = data["reference"]
         elif run_id is not None:
             run = validate.CampaignRunId().to_python(run_id)
@@ -798,12 +821,22 @@ class Root(object):
     @cherrypy.expose
     def launch_run(self, run_id):
         run = validate.CampaignRunId().to_python(run_id)
-        results = [r for r in run.results if not r.completed]
         tm = run.test_mean
+        # Resolve keywords
+        results = [r for r in run.results if not r.completed]
+        def keywords_check(test):
+            test_keywords = test.test_spec.keywords.split(" ")
+            obj_keywords = test.objectives[0].keywords.split(" ")
+            plan_keywords = test.objectives[0].test_plan.keywords.split(" ")
+            present = any(x for x in tm.keywords if (x in test_keywords or x in obj_keywords or x in plan_keywords))
+            if tm.keywords_mode == 0:
+                return present
+            elif tm.keywords_mode == 1:
+                return not present
         init = None
         if tm:
             init=tm.code_init
-        test_runner = scapy.run_tests_with_dependencies(results, lambda r:r.test, init=init)
+        test_runner = scapy.run_tests_with_dependencies(results, lambda r:r.test, init=init, keywords=keywords_check)
         
         def add_test_runner(stream):
             for kind,data,pos in stream:
@@ -811,7 +844,7 @@ class Root(object):
                 if kind == 'START' and data[1].get("id") == 'insert_tests_here':
                     for result,(res_val,res,exn) in test_runner:
                         result.set(output=res, date=datetime.datetime(*time.localtime()[:7]),
-                                   status=[Status_Failed,Status_Passed,Status_Stopped,Status_Dependency_Failed][res_val])
+                                   status=[Status_Failed,Status_Passed,Status_Stopped,Status_Dependency_Failed,Status_Skipped][res_val])
                         if result.test != result.test.test_spec.tests[-1]:
                             self.outdate_result(result)
                         t = tag.tr(class_=result.status.css_class)
@@ -1044,7 +1077,7 @@ def main(*args):
             raise ScapytainException("Error while checking database version (%s)" % e)
             
 
-        global Status_Not_Done,Status_Stopped,Status_Failed,Status_Passed
+        global Status_Not_Done,Status_Stopped,Status_Failed,Status_Passed,Status_Skipped
         global Status_Outdated_Failed,Status_Outdated_Passed,Status_Dependency_Failed
         
         Status_Not_Done=Status.get(1)
@@ -1054,6 +1087,7 @@ def main(*args):
         Status_Outdated_Failed=Status.get(5)
         Status_Outdated_Passed=Status.get(6)
         Status_Dependency_Failed=Status.get(7)
+        Status_Skipped=Status.get(8)
 
     cherrypy.engine.subscribe('start_thread', connectdb)
 
