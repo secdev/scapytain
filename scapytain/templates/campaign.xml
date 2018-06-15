@@ -26,8 +26,10 @@
             <h1>${camp.reference}: ${camp.name}</h1>
 
             <form method="POST" action="$action">
-                <input type="hidden" id="quick_run" name="quick_run" value="1" />
-                <input type="submit" value="Quick run" />
+                <input type="submit" name="quick_run" value="New quick run" />
+                <py:if test="camp.campaign_runs">
+                    <input type="submit" name="resume_quick_run" value="Resume last run" />
+                </py:if>
             </form>
 
             <h2 py:if="camp.test_mean">Default test mean: <a href="/test_mean/${camp.test_mean.id}">${camp.test_mean.reference}: ${camp.test_mean.name}</a>

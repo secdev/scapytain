@@ -11,9 +11,9 @@
 
     <body py:with="baseurl='/test_plan/%i' % test_plan.id">
         <?python
-      if extended_view:
-         baseurl += "?extended_view=1"
-    ?>
+          if extended_view:
+              baseurl += "?extended_view=1"
+        ?>
 
         <menu test_plan="${test_plan.id}" />
         <bigtitle title="Test plan description" />
@@ -44,6 +44,7 @@
             <tr py:def="headers">
                 <th sortkey="reference">Reference</th>
                 <th sortkey="name">Name</th>
+                <th py:if="extended_view" sortkey="keywords">Keywords</th>
                 <th py:if="extended_view" sortkey="description">Description</th>
                 <th sortkey="priority">Priority</th>
                 <th sortkey="nbtests">#Tests</th>
@@ -55,6 +56,7 @@
                 </td>
                 <td>${obj.name}</td>
                 <td py:if="extended_view">
+                    <py:if test="obj.keywords">${obj.keywords.strip()}</py:if>
                     <pre class="text">
                         <py:if test="obj.description">${obj.description.strip()}</py:if>
                     </pre>

@@ -1,0 +1,46 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"      
+      xmlns:py="http://genshi.edgewall.org/">
+
+    <xi:include href="layout.xml" />
+
+
+    <head>
+        <title>Import a UTscapy config file</title>
+    </head>
+
+    <body>
+
+        <menu />
+        <bigtitle title="Import a UTscapy config file" />
+        <div class="navbar">
+            <a href="/">Home</a> &gt;
+            <a href="/test_plan/">Test Plans</a> &gt;
+        </div>
+
+        <div class="content">
+            <h1>Locate your UTSC file</h1>
+
+            <form method="POST" action="${action}" enctype="multipart/form-data">
+                <table>
+                    <tr>
+                        <th>
+                            <label for="utsc_file">Import from UTScapy config file (we need real path to access the upper scapy folder)</label>
+                        </th>
+                        <td class="error" py:if="'utsc_file' in errors">${errors.utsc_file}</td>
+                        <td>
+                            <!-- We would all love to use type="file", but then the browser uses temporary files, so we don't get the real path -->
+                            <input id="utsc_file" name="utsc_file" size="60" type="text" />
+                        </td>
+                    </tr>
+
+
+                </table>
+                <input type="submit" value="Go!" />
+            </form>
+
+        </div>
+
+    </body>
+</html>
+

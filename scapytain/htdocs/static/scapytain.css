@@ -295,6 +295,7 @@ span.test_failed, table.list tr.test_failed, table.list td.test_failed { backgro
 span.test_outdated_failed, table.list tr.test_outdated_failed, table.list td.test_outdated_failed { background-color: #c77; }
 span.test_outdated_passed, table.list tr.test_outdated_passed, table.list td.test_outdated_passed { background-color: #7c7; }
 span.test_dependency_failed, table.list tr.test_dependency_failed, table.list td.test_dependency_failed { background-color: #c33; }
+span.test_skipped, table.list tr.test_skipped, table.list td.test_skipped { background-color: #c0c0c0; }
 table.list tr:hover { background-color: #d0d0ff; }
 
 table.list tr.not_applicable { background-color: #cccca0; }

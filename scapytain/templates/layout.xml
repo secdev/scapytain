@@ -60,6 +60,13 @@
                 </tr>
                 <tr>
                     <td>
+                        <a href="/import_utsc">
+                            <span class="block">+ import UTscapy config file</span>
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
                         <a href="/edit_test_plan">
                             <span class="block">+ add a test plan</span>
                         </a>
@@ -193,6 +200,13 @@
                     <tr>
                         <td>
                             <a href="/objective/${obj.id}">${obj.reference}</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="/objective/${obj.id}?extended_view=1">
+                                <span class="block">+ extended view</span>
+                            </a>
                         </td>
                     </tr>
                     <tr>

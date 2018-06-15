@@ -7,10 +7,11 @@
 
 from __future__ import print_function
 
-import sys, os
+import sys, os, glob, json, copy
 from sqlobject import *
 import logging
 import re
+import six
 log = logging.getLogger("scapytain")
 
 sqlmeta.style = styles.MixedCaseStyle()
@@ -28,6 +29,7 @@ class Test_Plan(SQLObject):
     objectives = MultipleJoin('Objective')
     sections = MultipleJoin('Section')
     campaigns = RelatedJoin('Campaign')
+    keywords = UnicodeCol(default="")
 
 class Section(SQLObject):
     name = UnicodeCol()
@@ -45,6 +47,7 @@ class Objective(SQLObject):
     applicable = BoolCol(default=True)
     tests = RelatedJoin('Test')
     objective_results = MultipleJoin('Objective_Result')
+    keywords = UnicodeCol(default="")
     
 class Test(SQLObject):
     test_spec = ForeignKey('Test_Spec', cascade=False)
@@ -63,6 +66,7 @@ class Test_Spec(SQLObject):
     tests = MultipleJoin('Test', orderBy='version')
     parents = RelatedJoin("Test_Spec", joinColumn="parents", otherColumn="children", addRemoveName="Parent")
     children = RelatedJoin("Test_Spec", joinColumn="children", otherColumn="parents",addRemoveName="Child", createRelatedTable=False)
+    keywords = UnicodeCol(default="")
 
 class Test_Group(SQLObject):
     name = UnicodeCol()
@@ -75,6 +79,8 @@ class Test_Mean(SQLObject):
     image = BLOBCol(default="")
     image_mime = StringCol(default="")
     code_init = UnicodeCol()
+    keywords_mode = IntCol(default=0)
+    keywords = UnicodeCol(default="")
 
 class Campaign(SQLObject):
     test_plans = RelatedJoin('Test_Plan')
@@ -157,6 +163,7 @@ def create_tables():
     Status(status="Outdated failed", css_class="test_outdated_failed")
     Status(status="Outdated passed", css_class="test_outdated_passed")
     Status(status="Dependency Failed", css_class="test_dependency_failed")
+    Status(status="Skipped", css_class="test_skipped")
     
 
 def dump_table(t):
@@ -196,7 +203,13 @@ def import_uts_data(uts_data, test_plan=None, test_plan_ref=None, testref="TEST%
         if not l or l[0] == '#':
             continue
         if l[0] == "~":
-            continue
+            if test_plan:
+                if prev_test_spec is not None:
+                    prev_test_spec.keywords = l[1:].strip()
+                elif obj is not None:
+                    obj.keywords = l[1:].strip()
+                elif test_plan:
+                    test_plan.keywords = l[1:].strip()
         elif l[0] == "%":
             if test_plan:
                 test_plan.name = l[1:].strip()
@@ -224,6 +237,65 @@ def import_uts_data(uts_data, test_plan=None, test_plan_ref=None, testref="TEST%
             if test is not None:
                 test.code += l
 
+def _resolve_testfiles(testfiles, scapy):
+    for tfile in testfiles[:]:
+        if "*" in tfile:
+            testfiles.remove(tfile)
+            testfiles.extend(glob.glob(os.path.abspath(os.path.join(scapy, tfile))))
+    return testfiles
+
+def import_utsc_data(utsc_file, reference=None, test_mean=None):
+    with open(utsc_file, "r") as f:
+        utsc_data = f.read()
+    name = os.path.split(utsc_file)[1]
+    # scapy/test/config/ourfile.utsc ==> folder of the file + 2 upper to get the scapy folder
+    scapy = os.path.abspath(os.path.join(os.path.split(utsc_file)[0], os.pardir, os.pardir))
+    if not os.path.isdir(scapy):
+        raise IOError("The file must be located in the scapy/test/config folder")
+    if test_mean is None:
+        if reference is None:
+            reference = "No ref yet"
+        test_mean = Test_Mean(reference=reference, name=name, code_init="")
+    
+    data = json.loads(utsc_data)
+    testfiles = []
+    code_init = []
+    code_init.append("os.environ['SCAPY_ROOT_DIR'] = '" + scapy + "'")
+    if "kw_ok" in data:
+        test_mean.keywords = " ".join(data["kw_ok"])
+        test_mean.keywords_mode = 0
+    elif "kw_ko" in data:
+        test_mean.keywords = " ".join(data["kw_ko"])
+        test_mean.keywords_mode = 1
+    if "preexec" in data:
+        preexec = data["preexec"]
+        for prex in six.iterkeys(copy.copy(preexec)):
+            if "*" in prex:
+                pycode = preexec[prex]
+                del preexec[prex]
+                for gl in glob.iglob(prex):
+                    _pycode = pycode.replace("%name%", os.path.splitext(os.path.split(gl)[1])[0])
+                    preexec[gl] = _pycode
+        code_init.extend(preexec.values())
+        if "global_preexec" in preexec:
+            global_preexec = data["global_preexec"]
+            code_init.append(global_preexec)
+    test_mean.code_init = "\n".join(list(set(code_init)))
+    if "testfiles" in data:
+        testfiles = data["testfiles"]
+        testfiles = _resolve_testfiles(testfiles, scapy)
+        if "remove_testfiles" in data:
+            for t in _resolve_testfiles(data["remove_testfiles"], scapy):
+                try:
+                    testfiles.remove(t)
+                except:
+                    pass
+        camp = Campaign(name=name, reference=test_mean.reference, test_mean=test_mean)
+        for t in testfiles:
+            name = os.path.split(t)[1]
+            test_plan = Test_Plan(reference="Test %s" % name, name=name)
+            import_uts_file(t, test_plan=test_plan, add_dependency=True)
+            camp.addTest_Plan(test_plan)
 
 
 def usage():
