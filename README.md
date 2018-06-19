@@ -22,19 +22,21 @@ This package depends on:
   - highlight
   - graphviz
 
+They are automatically installed during the setup.py install
+
 ## 2\. Install libraries and programs
 
 Untar the archive and run
 
     python setup.py install
 
-## 3\. Configure Scapytain
+## 3\. (Advanced usage) Configure Scapytain
 
 Edit /etc/scapytainrc.
 
 Set the database URI, for instance:
 
-    database = sqlite:///var/lib/scapytain/scapytain.db
+    database = /var/lib/scapytain/scapytain.db
 
 The scapyproxy parameter holds the command to execute the Scapy proxy,
 scapytain\_scapyproxy by default. The web application communicates with
@@ -91,3 +93,17 @@ If you encounter internal server errors, you can set
 
 in /etc/scapytainrc and you should have more output and backtraces in
 the console you ran scapytain into.
+
+# Screenshots
+
+## Import a UTSC campaign
+
+![Import a UTSC campaign](doc/import_utsc.png)
+
+## Open campaign
+
+![Opened campaign](doc/campaign.png)
+
+## Run Campaign
+
+![Running campaign](doc/running_campaign.png)
